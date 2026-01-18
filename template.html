@@ -306,52 +306,63 @@
             }
         });
 
-        // Gráfico Historial (Barras Flotantes)
+        // Gráfico Historial (Líneas con relleno)
         let isMonthlyView = false;
 
-        function getHistoryDataset(data, isMonthly) {
-            return {
-                label: 'Rango Temp',
-                data: data.map(d => [d.min, d.max]),
-                backgroundColor: data.map(d => {
-                    return d.max > 75 ? 'rgba(239, 68, 68, 0.5)' : 'rgba(59, 130, 246, 0.5)';
-                }),
-                borderColor: data.map(d => {
-                    return d.max > 75 ? 'rgb(239, 68, 68)' : 'rgb(59, 130, 246)';
-                }),
-                borderWidth: 1,
-                barPercentage: 0.5,
-                categoryPercentage: 0.9,
-                borderRadius: 6,
-                borderSkipped: false
-            };
+        function getHistoryDatasets(data, isMonthly) {
+            return [
+                {
+                    label: 'Máxima',
+                    data: data.map(d => d.max),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    fill: false
+                },
+                {
+                    label: 'Mínima',
+                    data: data.map(d => d.min),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)', // Color del área entre min y max
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    fill: '-1' // Rellena hasta el dataset anterior (Máxima)
+                }
+            ];
         }
 
         historyChart = new Chart(document.getElementById('historyChart'), {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: historyData.map(d => d.d),
-                datasets: [getHistoryDataset(historyData, false)]
+                datasets: getHistoryDatasets(historyData, false)
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
                             title: function (context) { return context[0].label; },
                             label: function (context) {
-                                const raw = context.raw; // [min, max]
-                                const idx = context.dataIndex;
-                                const d = isMonthlyView ? monthlyData[idx] : historyData[idx];
+                                const d = isMonthlyView ? monthlyData[context.dataIndex] : historyData[context.dataIndex];
+                                let val = context.parsed.y;
+                                let label = context.dataset.label + ': ' + val + '°C';
 
-                                // Fix: usar min_t/max_t que vienen del Python
-                                let label = `Min: ${raw[0]}°C`;
-                                if (!isMonthlyView && d.min_t) label += ` (${d.min_t})`;
-                                label += ` - Max: ${raw[1]}°C`;
-                                if (!isMonthlyView && d.max_t) label += ` (${d.max_t})`;
-
+                                if (context.dataset.label === 'Máxima' && !isMonthlyView && d.max_t) {
+                                    label += ` (${d.max_t})`;
+                                }
+                                if (context.dataset.label === 'Mínima' && !isMonthlyView && d.min_t) {
+                                    label += ` (${d.min_t})`;
+                                }
                                 return label;
                             }
                         }
@@ -377,12 +388,12 @@
                 btn30.className = inactiveClass;
                 btnMonth.className = activeClass;
                 historyChart.data.labels = monthlyData.map(d => d.d);
-                historyChart.data.datasets = [getHistoryDataset(monthlyData, true)];
+                historyChart.data.datasets = getHistoryDatasets(monthlyData, true);
             } else {
                 btn30.className = activeClass;
                 btnMonth.className = inactiveClass;
                 historyChart.data.labels = historyData.map(d => d.d);
-                historyChart.data.datasets = [getHistoryDataset(historyData, false)];
+                historyChart.data.datasets = getHistoryDatasets(historyData, false);
             }
             historyChart.update();
         };
