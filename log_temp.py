@@ -243,7 +243,8 @@ def render_html(current_temp):
                     elif parsed["type"] == "SUMMARY":
                         history_data.append({
                             "d": parsed["datetime"].strftime("%Y-%m-%d"),
-                        "max": parsed["max"],
+                            "min": parsed["min"],
+                            "max": parsed["max"],
                             "min_time": parsed.get("min_time", ""),
                             "max_time": parsed.get("max_time", ""),
                             "dt": parsed["datetime"]  # Para ordenar
