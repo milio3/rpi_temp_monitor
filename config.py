@@ -4,7 +4,7 @@ Configuración centralizada para el monitor de temperatura
 from pathlib import Path
 
 # Rutas
-BASE_DIR = Path("/home/dev/proyectos/monitor_temp")
+BASE_DIR = Path(__file__).resolve().parent
 LOG_FILE = BASE_DIR / "temp.log"
 TEMPLATE_FILE = BASE_DIR / "template.html"
 INDEX_FILE = BASE_DIR / "index.html"

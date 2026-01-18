@@ -401,6 +401,13 @@
         // Estado inicial
         updateTempStatus(CURRENT_TEMP_VALUE);
     </script>
+
+    <script>
+        // Recargar la página automáticamente cada 60 segundos para obtener datos frescos.
+        setInterval(() => {
+            window.location.reload();
+        }, 60000); // 60000 milisegundos = 60 segundos
+    </script>
 </body>
 
 </html>
