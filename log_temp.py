@@ -26,7 +26,7 @@ except ImportError:
     TEMP_WARNING_THRESHOLD = 70.0
     TEMP_CRITICAL_THRESHOLD = 80.0
     DAILY_HOURS = 24
-    HISTORY_DAYS = 10
+    HISTORY_DAYS = 30
 
 # Configurar logging
 logging.basicConfig(
@@ -189,9 +189,26 @@ def parse_log_line(line):
             vals = parts[1].split("/")
             if len(vals) < 2:
                 return None
-            v_min = float(vals[0].split("(")[0].strip())
-            v_max = float(vals[1].split("(")[0].strip())
-            return {"type": "SUMMARY", "datetime": dt, "min": v_min, "max": v_max}
+            
+            # Extraer valor y hora: "12.34 (15:00)"
+            def extract_val_time(s):
+                s = s.strip()
+                if "(" in s:
+                    val_str, time_str = s.split("(")
+                    return float(val_str.strip()), time_str.replace(")", "").strip()
+                return float(s), ""
+
+            v_min, t_min = extract_val_time(vals[0])
+            v_max, t_max = extract_val_time(vals[1])
+            
+            return {
+                "type": "SUMMARY", 
+                "datetime": dt, 
+                "min": v_min, 
+                "min_time": t_min,
+                "max": v_max,
+                "max_time": t_max
+            }
     except (ValueError, IndexError) as e:
         logging.debug(f"Error al parsear línea: {line.strip()}, error: {e}")
         return None
@@ -226,8 +243,9 @@ def render_html(current_temp):
                     elif parsed["type"] == "SUMMARY":
                         history_data.append({
                             "d": parsed["datetime"].strftime("%Y-%m-%d"),
-                            "min": parsed["min"],
-                            "max": parsed["max"],
+                        "max": parsed["max"],
+                            "min_time": parsed.get("min_time", ""),
+                            "max_time": parsed.get("max_time", ""),
                             "dt": parsed["datetime"]  # Para ordenar
                         })
         except OSError as e:
@@ -240,11 +258,39 @@ def render_html(current_temp):
     # Eliminar campo temporal dt antes de JSON
     daily_data_clean = [{"t": d["t"], "v": d["v"]} for d in daily_data]
     
-    # Ordenar historial por fecha y tomar últimos N días
+    # Ordenar historial por fecha (reciente a antiguo para procesar meses)
     history_data.sort(key=lambda x: x["dt"], reverse=True)
-    history_data_clean = [{"d": h["d"], "min": h["min"], "max": h["max"]} 
-                         for h in history_data[:HISTORY_DAYS]]
-    history_data_clean.reverse()  # Mostrar más antiguo a más reciente
+    
+    # Generar datos mensuales
+    monthly_data = {}
+    for h in history_data:
+        month_key = h["dt"].strftime("%Y-%m")
+        if month_key not in monthly_data:
+            monthly_data[month_key] = {"min": h["min"], "max": h["max"], "days": 0}
+        else:
+            monthly_data[month_key]["min"] = min(monthly_data[month_key]["min"], h["min"])
+            monthly_data[month_key]["max"] = max(monthly_data[month_key]["max"], h["max"])
+        monthly_data[month_key]["days"] += 1
+        
+    monthly_data_clean = [
+        {"d": k, "min": v["min"], "max": v["max"]} 
+        for k, v in monthly_data.items()
+    ]
+    # Ordenar meses cronológicamente
+    monthly_data_clean.sort(key=lambda x: x["d"]) 
+    
+    # Datos de historial (últimos HISTORY_DAYS)
+    # history_data ya está ordenado reciente -> antiguo
+    history_subset = history_data[:HISTORY_DAYS]
+    history_subset.reverse()  # Ordenar antiguo -> reciente para gráfico
+    
+    history_data_clean = [{
+        "d": h["d"], 
+        "min": h["min"], 
+        "max": h["max"],
+        "min_t": h["min_time"],
+        "max_t": h["max_time"]
+    } for h in history_subset]
 
     try:
         with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
@@ -256,6 +302,7 @@ def render_html(current_temp):
         html = html.replace("{{LAST_UPDATE}}", datetime.now().strftime("%H:%M:%S"))
         html = html.replace("{{DAILY_JSON}}", json.dumps(daily_data_clean))
         html = html.replace("{{HISTORY_JSON}}", json.dumps(history_data_clean))
+        html = html.replace("{{MONTHLY_JSON}}", json.dumps(monthly_data_clean))
 
         # Asegurar que el directorio existe
         INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)

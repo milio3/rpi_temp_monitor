@@ -1,54 +1,131 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="300">
+
     <title>Raspberry Pi - Monitor de Temperatura</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .temp-normal { color: #16a34a; background-color: #dcfce7; }
-        .temp-warning { color: #ea580c; background-color: #ffedd5; }
-        .temp-critical { color: #dc2626; background-color: #fee2e2; }
-        
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .temp-normal {
+            color: #16a34a;
+            background-color: #dcfce7;
+        }
+
+        .temp-warning {
+            color: #ea580c;
+            background-color: #ffedd5;
+        }
+
+        .temp-critical {
+            color: #dc2626;
+            background-color: #fee2e2;
+        }
+
         /* Tema oscuro */
-        body.dark-mode { background-color: #0f172a; color: #e2e8f0; }
-        body.dark-mode .bg-white { background-color: #1e293b; border-color: #334155; }
-        body.dark-mode .text-slate-800 { color: #e2e8f0; }
-        body.dark-mode .text-slate-700 { color: #cbd5e1; }
-        body.dark-mode .text-slate-500 { color: #94a3b8; }
-        body.dark-mode .text-slate-400 { color: #64748b; }
-        body.dark-mode .text-slate-900 { color: #f1f5f9; }
-        body.dark-mode .border-slate-100 { border-color: #334155; }
-        body.dark-mode .bg-slate-50 { background-color: #0f172a; }
-        body.dark-mode .bg-slate-100 { background-color: #1e293b; }
-        body.dark-mode .bg-slate-200 { background-color: #334155; }
-        body.dark-mode .hover\:bg-slate-200:hover { background-color: #334155; }
-        body.dark-mode .text-slate-600 { color: #94a3b8; }
-        body.dark-mode .border-t { border-color: #334155; }
-        body.dark-mode a:hover { color: #f97316; }
-        
-        body.dark-mode .temp-normal { color: #22c55e; background-color: #166534; }
-        body.dark-mode .temp-warning { color: #f97316; background-color: #7c2d12; }
-        body.dark-mode .temp-critical { color: #ef4444; background-color: #991b1b; }
-        
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .bg-white {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .text-slate-800 {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .text-slate-700 {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .text-slate-500 {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .text-slate-400 {
+            color: #64748b;
+        }
+
+        body.dark-mode .text-slate-900 {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .border-slate-100 {
+            border-color: #334155;
+        }
+
+        body.dark-mode .bg-slate-50 {
+            background-color: #0f172a;
+        }
+
+        body.dark-mode .bg-slate-100 {
+            background-color: #1e293b;
+        }
+
+        body.dark-mode .bg-slate-200 {
+            background-color: #334155;
+        }
+
+        body.dark-mode .hover\:bg-slate-200:hover {
+            background-color: #334155;
+        }
+
+        body.dark-mode .text-slate-600 {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .border-t {
+            border-color: #334155;
+        }
+
+        body.dark-mode a:hover {
+            color: #f97316;
+        }
+
+        body.dark-mode .temp-normal {
+            color: #22c55e;
+            background-color: #166534;
+        }
+
+        body.dark-mode .temp-warning {
+            color: #f97316;
+            background-color: #7c2d12;
+        }
+
+        body.dark-mode .temp-critical {
+            color: #ef4444;
+            background-color: #991b1b;
+        }
+
         .theme-toggle {
             cursor: pointer;
             padding: 0.5rem;
             border-radius: 0.5rem;
             transition: background-color 0.2s;
         }
+
         .theme-toggle:hover {
             background-color: rgba(0, 0, 0, 0.1);
         }
+
         body.dark-mode .theme-toggle:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
+
 <body class="bg-slate-50 text-slate-900">
     <div class="max-w-5xl mx-auto px-4 py-8">
         <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -57,55 +134,67 @@
                     <h1 class="text-3xl font-bold text-slate-800">Panel de Control</h1>
                     <p class="text-slate-500 italic">Estado térmico de la CPU</p>
                 </div>
-                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle p-2 rounded-lg" title="Cambiar tema">
+                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle p-2 rounded-lg"
+                    title="Cambiar tema">
                     <svg id="themeIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                <div id="tempIcon" class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Actual</p>
-                    <p id="currentTemp" class="text-3xl font-bold text-orange-600">{{CURRENT_TEMP}} °C</p>
-                </div>
-                <button onclick="refreshData()" class="ml-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors" title="Actualizar datos">
-                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
+            <div class="text-right">
+                <p class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-1">Temperatura Actual</p>
+                <p id="currentTemp" class="text-6xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+                    {{CURRENT_TEMP}} °C</p>
             </div>
+
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <h2 class="text-lg font-bold mb-4 text-slate-700 border-b-2 border-orange-500 inline-block">Últimas 24 Horas</h2>
+                <h2 class="text-lg font-bold mb-4 text-slate-700 border-b-2 border-orange-500 inline-block">Últimas 24
+                    Horas</h2>
                 <div class="h-64"><canvas id="dailyChart"></canvas></div>
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <h2 class="text-lg font-bold mb-4 text-slate-700 border-b-2 border-blue-500 inline-block">Histórico (Mín/Máx)</h2>
+                <div
+                    class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <h2 class="text-lg font-bold text-slate-700 dark:text-slate-200">Histórico</h2>
+                    <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex gap-1">
+                        <button id="btnView30" onclick="setHistoryView('30')"
+                            class="px-3 py-1 text-sm rounded-md bg-white dark:bg-slate-600 shadow-sm text-slate-800 dark:text-slate-100 font-medium transition-all">30
+                            Días</button>
+                        <button id="btnViewMonth" onclick="setHistoryView('month')"
+                            class="px-3 py-1 text-sm rounded-md text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Meses</button>
+                    </div>
+                </div>
+
                 <div class="h-64"><canvas id="historyChart"></canvas></div>
             </div>
         </div>
 
         <footer class="flex justify-between items-center text-sm text-slate-400 border-t pt-6">
             <p id="lastUpdate">Actualizado: {{LAST_UPDATE}}</p>
-            <a href="temp.log" class="hover:text-orange-600 font-semibold underline">Descargar Datos Crutos (temp.log)</a>
+            <a href="temp.log" class="hover:text-orange-600 font-semibold underline">Descargar Datos Crutos
+                (temp.log)</a>
         </footer>
     </div>
 
     <script>
         let dailyChart, historyChart;
-        const CURRENT_TEMP_VALUE = {{CURRENT_TEMP}};
-        
-        // Gestión de tema oscuro
+        const CURRENT_TEMP_VALUE = {{ CURRENT_TEMP }};
+
+        // Datos inyectados desde Python
+        const dailyData = {{ DAILY_JSON }};
+        const historyData = {{ HISTORY_JSON }};
+        const monthlyData = {{ MONTHLY_JSON }};
+
+        // --- Gestión de Tema ---
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-            
+
             if (isDark) {
                 document.body.classList.add('dark-mode');
                 updateThemeIcon(true);
@@ -114,14 +203,14 @@
                 updateThemeIcon(false);
             }
         }
-        
+
         function toggleTheme() {
             const isDark = document.body.classList.toggle('dark-mode');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon(isDark);
             updateChartColors(isDark);
         }
-        
+
         function updateThemeIcon(isDark) {
             const icon = document.getElementById('themeIcon');
             if (isDark) {
@@ -130,119 +219,60 @@
                 icon.innerHTML = '<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
             }
         }
-        
+
         function updateChartColors(isDark) {
             const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(0, 0, 0, 0.1)';
             const textColor = isDark ? '#cbd5e1' : '#64748b';
-            
+
             if (dailyChart) {
                 dailyChart.options.scales.x.grid.color = gridColor;
                 dailyChart.options.scales.y.grid.color = gridColor;
                 dailyChart.options.scales.x.ticks.color = textColor;
                 dailyChart.options.scales.y.ticks.color = textColor;
-                dailyChart.options.plugins.legend.labels.color = textColor;
                 dailyChart.update('none');
             }
-            
+
             if (historyChart) {
                 historyChart.options.scales.x.grid.color = gridColor;
                 historyChart.options.scales.y.grid.color = gridColor;
                 historyChart.options.scales.x.ticks.color = textColor;
                 historyChart.options.scales.y.ticks.color = textColor;
-                historyChart.options.plugins.legend.labels.color = textColor;
                 historyChart.update('none');
             }
         }
-        
+
+        // --- Actualización de UI ---
         function updateTempStatus(temp) {
             const tempEl = document.getElementById('currentTemp');
-            const iconEl = document.getElementById('tempIcon');
-            
             tempEl.textContent = temp.toFixed(2) + ' °C';
-            
-            // Remover clases anteriores
-            tempEl.className = 'text-3xl font-bold';
-            iconEl.className = 'h-12 w-12 rounded-full flex items-center justify-center';
-            
-            // Aplicar clases según temperatura
+
+            // Estilos base
+            tempEl.className = 'text-6xl font-bold tracking-tight';
+
+            // Colores por umbral
             if (temp >= 80) {
                 tempEl.classList.add('text-red-600');
-                iconEl.classList.add('temp-critical');
             } else if (temp >= 70) {
                 tempEl.classList.add('text-orange-600');
-                iconEl.classList.add('temp-warning');
             } else {
-                tempEl.classList.add('text-green-600');
-                iconEl.classList.add('temp-normal');
+                tempEl.classList.add('text-slate-800', 'dark:text-slate-100');
             }
         }
-        
-        function updateCharts(dailyData, historyData) {
-            if (dailyChart) {
-                dailyChart.data.labels = dailyData.map(d => d.t);
-                dailyChart.data.datasets[0].data = dailyData.map(d => d.v);
-                dailyChart.update('none');
-            }
-            
-            if (historyChart) {
-                historyChart.data.labels = historyData.map(d => d.d);
-                historyChart.data.datasets[0].data = historyData.map(d => d.max);
-                historyChart.data.datasets[1].data = historyData.map(d => d.min);
-                historyChart.update('none');
-            }
-        }
-        
+
         function updateTimestamp() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             document.getElementById('lastUpdate').textContent = 'Actualizado: ' + timeStr;
         }
-        
-        async function refreshData() {
-            try {
-                const response = await fetch(window.location.href + '?t=' + Date.now());
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                
-                // Extraer datos del HTML
-                const scripts = doc.querySelectorAll('script');
-                for (let script of scripts) {
-                    if (script.textContent.includes('dailyData')) {
-                        // Ejecutar el script para obtener los datos
-                        const scriptText = script.textContent;
-                        const dailyMatch = scriptText.match(/dailyData\s*=\s*(\[.*?\]);/s);
-                        const historyMatch = scriptText.match(/historyData\s*=\s*(\[.*?\]);/s);
-                        const tempMatch = scriptText.match(/CURRENT_TEMP_VALUE\s*=\s*([\d.]+)/);
-                        
-                        if (dailyMatch && historyMatch) {
-                            const dailyData = JSON.parse(dailyMatch[1]);
-                            const historyData = JSON.parse(historyMatch[1]);
-                            const temp = tempMatch ? parseFloat(tempMatch[1]) : CURRENT_TEMP_VALUE;
-                            
-                            updateTempStatus(temp);
-                            updateCharts(dailyData, historyData);
-                            updateTimestamp();
-                        }
-                        break;
-                    }
-                }
-            } catch (error) {
-                console.error('Error al actualizar datos:', error);
-            }
-        }
-        
-        // Inicializar gráficos
-        const dailyData = {{DAILY_JSON}};
-        const historyData = {{HISTORY_JSON}};
 
-        // Inicializar tema antes de crear gráficos
-        initTheme();
-        
+        // --- Gráficos ---
+        initTheme(); // Inicializar tema antes de gráficos para colores correctos
+
         const isDarkMode = document.body.classList.contains('dark-mode');
         const gridColor = isDarkMode ? 'rgba(148, 163, 184, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         const textColor = isDarkMode ? '#cbd5e1' : '#64748b';
-        
+
+        // Gráfico Diario (Línea)
         dailyChart = new Chart(document.getElementById('dailyChart'), {
             type: 'line',
             data: {
@@ -252,49 +282,110 @@
                     data: dailyData.map(d => d.v),
                     borderColor: '#ea580c',
                     backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                    fill: true, tension: 0.4, pointRadius: 2
+                    fill: true, tension: 0.4, pointRadius: 0, hoverPointRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
                 plugins: {
-                    legend: { labels: { color: textColor } }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.parsed.y.toFixed(2) + ' °C';
+                            }
+                        }
+                    }
                 },
                 scales: {
-                    x: { grid: { color: gridColor }, ticks: { color: textColor } },
+                    x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 8 } },
                     y: { grid: { color: gridColor }, ticks: { color: textColor } }
                 }
             }
         });
 
+        // Gráfico Historial (Barras Flotantes)
+        let isMonthlyView = false;
+
+        function getHistoryDataset(data, isMonthly) {
+            return {
+                label: 'Rango Temp',
+                data: data.map(d => [d.min, d.max]), // Formato [min, max] para barras flotantes
+                backgroundColor: data.map(d => {
+                    return d.max > 75 ? 'rgba(239, 68, 68, 0.7)' : 'rgba(59, 130, 246, 0.7)';
+                }),
+                borderWidth: 0,
+                barPercentage: 0.6,
+                categoryPercentage: 0.8,
+                borderRadius: 4,
+                borderSkipped: false
+            };
+        }
+
         historyChart = new Chart(document.getElementById('historyChart'), {
             type: 'bar',
             data: {
                 labels: historyData.map(d => d.d),
-                datasets: [
-                    { label: 'Máx', data: historyData.map(d => d.max), backgroundColor: '#ef4444' },
-                    { label: 'Mín', data: historyData.map(d => d.min), backgroundColor: '#3b82f6' }
-                ]
+                datasets: [getHistoryDataset(historyData, false)]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { labels: { color: textColor } }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function (context) { return context[0].label; },
+                            label: function (context) {
+                                const raw = context.raw; // [min, max]
+                                const idx = context.dataIndex;
+                                const d = isMonthlyView ? monthlyData[idx] : historyData[idx];
+
+                                let label = `Min: ${raw[0]}°C`;
+                                if (!isMonthlyView && d.min_time) label += ` (${d.min_time})`;
+                                label += ` - Max: ${raw[1]}°C`;
+                                if (!isMonthlyView && d.max_time) label += ` (${d.max_time})`;
+
+                                return label;
+                            }
+                        }
+                    }
                 },
                 scales: {
-                    x: { grid: { color: gridColor }, ticks: { color: textColor } },
+                    x: { grid: { display: false }, ticks: { color: textColor } },
                     y: { grid: { color: gridColor }, ticks: { color: textColor } }
                 }
             }
         });
-        
-        // Establecer estado inicial de temperatura
+
+        window.setHistoryView = function (mode) {
+            const btn30 = document.getElementById('btnView30');
+            const btnMonth = document.getElementById('btnViewMonth');
+
+            isMonthlyView = (mode === 'month');
+
+            const activeClass = "px-3 py-1 text-sm rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200 font-medium transition-all";
+            const inactiveClass = "px-3 py-1 text-sm rounded-md text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors";
+
+            if (isMonthlyView) {
+                btn30.className = inactiveClass;
+                btnMonth.className = activeClass;
+                historyChart.data.labels = monthlyData.map(d => d.d);
+                historyChart.data.datasets = [getHistoryDataset(monthlyData, true)];
+            } else {
+                btn30.className = activeClass;
+                btnMonth.className = inactiveClass;
+                historyChart.data.labels = historyData.map(d => d.d);
+                historyChart.data.datasets = [getHistoryDataset(historyData, false)];
+            }
+            historyChart.update();
+        };
+
+        // Estado inicial
         updateTempStatus(CURRENT_TEMP_VALUE);
-        
-        // Auto-refresh cada 60 segundos
-        setInterval(refreshData, 60000);
     </script>
 </body>
+
 </html>
