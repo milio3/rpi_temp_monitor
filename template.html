@@ -182,12 +182,12 @@
 
     <script>
         let dailyChart, historyChart;
-        const CURRENT_TEMP_VALUE = {{ CURRENT_TEMP }};
+        const CURRENT_TEMP_VALUE = parseFloat('{{CURRENT_TEMP}}');
 
         // Datos inyectados desde Python
-        const dailyData = {{ DAILY_JSON }};
-        const historyData = {{ HISTORY_JSON }};
-        const monthlyData = {{ MONTHLY_JSON }};
+        const dailyData = JSON.parse('{{DAILY_JSON}}');
+        const historyData = JSON.parse('{{HISTORY_JSON}}');
+        const monthlyData = JSON.parse('{{MONTHLY_JSON}}');
 
         // --- Gestión de Tema ---
         function initTheme() {
