@@ -8,13 +8,23 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}Iniciando despliegue de RPi Temp Monitor...${NC}"
 
+# Detector comando docker compose (V1 vs V2)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+else
+    echo -e "\033[0;31mError: No se encontró 'docker-compose' ni 'docker compose'. Por favor instala Docker Compose.\033[0m"
+    exit 1
+fi
+
 # 1. Crear directorios necesarios
 echo "Creando directorios locales..."
 mkdir -p data
 
 # 2. Construir e Iniciar Contenedores
 echo -e "${GREEN}Construyendo y levantando contenedores Docker...${NC}"
-docker-compose up -d --build
+$DOCKER_COMPOSE_CMD up -d --build
 
 # 3. Esperar un momento a que los servicios arranquen (opcional, pero buena práctica si fueramos a atacar la API)
 sleep 5
