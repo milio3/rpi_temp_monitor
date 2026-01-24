@@ -14,15 +14,15 @@ Esta guía te ayudará a instalar el Monitor de Temperatura en tu Raspberry Pi u
 
 ## Instalación
 
-1.  **Copiar archivos**:
-    Copia toda la carpeta del proyecto a tu RPi (por ejemplo, a `/home/dev/proyectos/monitor_temp_v2`).
-    Asegúrate de incluir:
-    - `backend/`
-    - `frontend/`
-    - `Dockerfile`
-    - `docker-compose.yml`
-    - `requirements.txt`
-    - `deploy.sh`
+1.  **Clonar y preparar repositorio**:
+    En tu Raspberry Pi, clona el repositorio y cambia a la rama de migración:
+    ```bash
+    cd /home/dev/proyectos/
+    git clone <URL_TU_REPOSITORIO> monitor_temp_v2
+    cd monitor_temp_v2
+    git fetch origin
+    git checkout feature/docker-migration
+    ```
 
 2.  **Preparar script de despliegue**:
     Da permisos de ejecución al script:
