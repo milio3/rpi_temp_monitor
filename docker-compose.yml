@@ -4,7 +4,7 @@ services:
   webapp:
     build: .
     container_name: rpi_temp_webapp
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8085:8000"
     volumes:
