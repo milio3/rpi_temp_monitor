@@ -10,7 +10,7 @@ try:
         BASE_DIR, LOG_FILE, TEMPLATE_FILE, INDEX_FILE, ALERT_LOG_FILE,
         TEMP_SENSOR_PATH, TEMP_MIN_VALID, TEMP_MAX_VALID,
         TEMP_WARNING_THRESHOLD, TEMP_CRITICAL_THRESHOLD,
-        DAILY_HOURS, HISTORY_DAYS
+        DAILY_HOURS, HISTORY_DAYS, SIMULATE_TEMP
     )
 except ImportError:
     # Configuración por defecto si config.py no existe
@@ -27,6 +27,7 @@ except ImportError:
     TEMP_CRITICAL_THRESHOLD = 80.0
     DAILY_HOURS = 24
     HISTORY_DAYS = 30
+    SIMULATE_TEMP = False
 
 # Configurar logging
 logging.basicConfig(
@@ -38,8 +39,14 @@ logging.basicConfig(
     ]
 )
 
+import random
+
 def get_cpu_temp():
-    """Lee la temperatura de la CPU desde el sistema."""
+    """Lee la temperatura de la CPU desde el sistema o simula si está configurado."""
+    if SIMULATE_TEMP:
+        # Simular temperatura entre 40 y 60 grados con cierta variabilidad
+        return random.uniform(40.0, 60.0)
+
     try:
         if not os.path.exists(TEMP_SENSOR_PATH):
             logging.error(f"Ruta de sensor de temperatura no encontrada: {TEMP_SENSOR_PATH}")

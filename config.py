@@ -2,6 +2,7 @@
 Configuración centralizada para el monitor de temperatura
 """
 from pathlib import Path
+import platform
 
 # Rutas
 BASE_DIR = Path(__file__).resolve().parent
@@ -9,6 +10,10 @@ LOG_FILE = BASE_DIR / "temp.log"
 TEMPLATE_FILE = BASE_DIR / "template.html"
 INDEX_FILE = BASE_DIR / "index.html"
 ALERT_LOG_FILE = BASE_DIR / "alerts.log"
+
+# Configuración de simulación
+IS_WINDOWS = platform.system() == "Windows"
+SIMULATE_TEMP = IS_WINDOWS  # Simular si estamos en Windows
 
 # Configuración de temperatura
 TEMP_SENSOR_PATH = "/sys/class/thermal/thermal_zone0/temp"
