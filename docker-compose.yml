@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  webapp:
+    build: .
+    container_name: rpi_temp_webapp
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8085:8000"
+    volumes:
+      - ./data:/app/backend/data_storage # Mapear volumen para persistencia (ajustaremos database path)
+      - ./backend:/app/backend # Opcional: para desarrollo (hot reload si se usara --reload)
+    restart: always
+    environment:
+      - DB_PATH=/app/backend/data_storage/database.db
+
+  monitor:
+    build: .
+    container_name: rpi_temp_monitor
+    command: python monitor_service.py
+    restart: always
+    environment:
+      - DB_PATH=/app/backend/data_storage/database.db
+    volumes:
+      - ./data:/app/backend/data_storage
+      - /sys:/sys:ro # Montar sysfs en read-only para leer temperatura
+
+volumes:
+  data:
