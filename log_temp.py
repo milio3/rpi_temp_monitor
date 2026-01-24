@@ -7,9 +7,8 @@ from pathlib import Path
 # Intentar importar configuración desde config.py, si no existe usar valores por defecto
 try:
     from config import (
-        BASE_DIR, LOG_FILE, TEMPLATE_FILE, INDEX_FILE, ALERT_LOG_FILE,
+        BASE_DIR, LOG_FILE, TEMPLATE_FILE, INDEX_FILE,
         TEMP_SENSOR_PATH, TEMP_MIN_VALID, TEMP_MAX_VALID,
-        TEMP_WARNING_THRESHOLD, TEMP_CRITICAL_THRESHOLD,
         DAILY_HOURS, HISTORY_DAYS, SIMULATE_TEMP
     )
 except ImportError:
@@ -18,13 +17,9 @@ except ImportError:
     LOG_FILE = BASE_DIR / "temp.log"
     TEMPLATE_FILE = BASE_DIR / "template.html"
     INDEX_FILE = BASE_DIR / "index.html"
-    ALERT_LOG_FILE = BASE_DIR / "alerts.log"
-    
     TEMP_SENSOR_PATH = "/sys/class/thermal/thermal_zone0/temp"
     TEMP_MIN_VALID = 0.0
     TEMP_MAX_VALID = 100.0
-    TEMP_WARNING_THRESHOLD = 70.0
-    TEMP_CRITICAL_THRESHOLD = 80.0
     DAILY_HOURS = 24
     HISTORY_DAYS = 30
     SIMULATE_TEMP = False
@@ -78,30 +73,7 @@ def validate_temp(temp):
         return False
     return TEMP_MIN_VALID <= temp <= TEMP_MAX_VALID
 
-def log_alert(temp, level):
-    """Registra una alerta cuando la temperatura supera umbrales."""
-    try:
-        alert_msg = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | {temp:.2f}°C | {level}\n"
-        if ALERT_LOG_FILE.exists():
-            with open(ALERT_LOG_FILE, "a", encoding="utf-8") as f:
-                f.write(alert_msg)
-        else:
-            with open(ALERT_LOG_FILE, "w", encoding="utf-8") as f:
-                f.write("# Fecha y Hora | Temperatura | Nivel (WARNING/CRITICAL)\n")
-                f.write(alert_msg)
-        logging.warning(f"ALERTA {level}: Temperatura {temp:.2f}°C")
-    except Exception as e:
-        logging.error(f"Error al escribir alerta: {e}")
 
-def check_alerts(temp):
-    """Verifica si la temperatura requiere generar alertas."""
-    if temp is None:
-        return
-    
-    if temp >= TEMP_CRITICAL_THRESHOLD:
-        log_alert(temp, "CRITICAL")
-    elif temp >= TEMP_WARNING_THRESHOLD:
-        log_alert(temp, "WARNING")
 
 def update_log(temp):
     """Actualiza el archivo de log con la temperatura actual."""
@@ -119,8 +91,7 @@ def update_log(temp):
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(linea)
         
-        # Verificar alertas
-        check_alerts(temp)
+
     except OSError as e:
         logging.error(f"Error al escribir en log: {e}")
     except Exception as e:

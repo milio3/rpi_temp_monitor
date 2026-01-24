@@ -6,22 +6,22 @@ Sistema de monitoreo de temperatura de CPU para Raspberry Pi con visualización 
 
 - Lectura automática de temperatura de CPU cada 10 minutos
 - Dashboard web con gráficos interactivos (últimas 24 horas y histórico)
-- Sistema de alertas por umbrales configurables
-- Consolidación automática de datos diarios
-- Actualización automática de la interfaz sin recargar página
+- **NUEVO**: Visualización histórica por últimos 30 días o agrupación por meses
+- **MEJORADO**: Tooltips detallados con fecha/hora en formato español (24h)
+- Consolidación automática de datos diarios y cálculo de máximas/mínimas mensuales
+- Actualización automática de la interfaz cada 60 segundos
 - Indicadores visuales de estado (normal/warning/critical)
-- Tema oscuro/claro con selector
+- Tema oscuro/claro con selector automático o manual
 
 ## Estructura del Proyecto
 
 ```
 monitor_temp/
-├── log_temp.py          # Script principal de monitoreo
+├── log_temp.py          # Script principal (monitoreo, consolidación y generación web)
 ├── config.py            # Configuración centralizada
 ├── template.html        # Plantilla HTML para el dashboard
 ├── index.html          # Dashboard generado (actualizado automáticamente)
 ├── temp.log            # Registro de temperaturas
-├── alerts.log          # Registro de alertas
 ├── monitor.log         # Log del sistema
 └── requirements.txt    # Dependencias (vacío, solo stdlib)
 ```
@@ -97,19 +97,12 @@ Ejemplo:
 2026-01-17 00:00:00 | 36.51 (00:00)/42.84 (23:50) | SUMMARY
 ```
 
-### alerts.log
 
-Registra alertas cuando la temperatura supera los umbrales:
-```
-YYYY-MM-DD HH:MM:SS | temperatura | WARNING/CRITICAL
-```
 
 ## Configuración
 
 Editar `config.py` para personalizar los parámetros:
 
-- `TEMP_WARNING_THRESHOLD`: 70.0°C - Umbral de advertencia
-- `TEMP_CRITICAL_THRESHOLD`: 80.0°C - Umbral crítico
 - `DAILY_HOURS`: 24 - Horas de datos diarios a mostrar
 - `HISTORY_DAYS`: 10 - Días de historial a mostrar
 - `TEMP_MIN_VALID`: 0.0°C - Temperatura mínima válida
@@ -120,9 +113,8 @@ Editar `config.py` para personalizar los parámetros:
 1. **Lectura de temperatura**: El script lee `/sys/class/thermal/thermal_zone0/temp` (en milidegrees)
 2. **Validación**: Verifica que la temperatura esté en rango válido (0-100°C)
 3. **Logging**: Escribe la temperatura en `temp.log`
-4. **Alertas**: Si supera umbrales, registra en `alerts.log`
-5. **Consolidación**: Al inicio del día, consolida datos del día anterior
-6. **Generación HTML**: Actualiza `index.html` con datos actualizados y gráficos
+4. **Consolidación**: Al inicio del día, consolida datos del día anterior
+5. **Generación HTML**: Actualiza `index.html` con datos actualizados y gráficos
 
 ## Características del Dashboard
 
@@ -131,15 +123,16 @@ Editar `config.py` para personalizar los parámetros:
   - Verde: < 70°C (normal)
   - Naranja: 70-80°C (advertencia)
   - Rojo: > 80°C (crítico)
-- **Tema oscuro/claro**: Selector de tema en la interfaz
-- **Botón de refresh**: Actualización manual de datos
-- **Gráficos interactivos**: Chart.js para visualización de datos
+- **Tema oscuro/claro**: Selector de tema en la interfaz (persiste preferencia)
+- **Vistas de Historial**:
+  - Últimos 30 días (detalle diario)
+  - Meses (resumen de máximas y mínimas con fecha/hora exacta)
+- **Gráficos interactivos**: Chart.js con tooltips personalizados y formatos locales
 
 ## Mantenimiento
 
 - Los logs pueden crecer con el tiempo. Considerar rotación periódica
 - El `index.html` se regenera en cada ejecución
-- Las alertas se acumulan en `alerts.log` - revisar periódicamente
 - Revisar `monitor.log` para logs del sistema y errores
 
 ## Solución de Problemas
