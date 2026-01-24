@@ -278,20 +278,32 @@ def render_html(current_temp):
                 "min": h["min"], 
                 "max": h["max"], 
                 "min_date": h["d"],
+                "min_time": h["min_time"],
                 "max_date": h["d"],
+                "max_time": h["max_time"],
                 "days": 0
             }
         else:
             if h["min"] < monthly_data[month_key]["min"]:
                 monthly_data[month_key]["min"] = h["min"]
                 monthly_data[month_key]["min_date"] = h["d"]
+                monthly_data[month_key]["min_time"] = h["min_time"]
             if h["max"] > monthly_data[month_key]["max"]:
                 monthly_data[month_key]["max"] = h["max"]
                 monthly_data[month_key]["max_date"] = h["d"]
+                monthly_data[month_key]["max_time"] = h["max_time"]
         monthly_data[month_key]["days"] += 1
         
     monthly_data_clean = [
-        {"d": k, "min": v["min"], "max": v["max"], "min_d": v["min_date"], "max_d": v["max_date"]} 
+        {
+            "d": k, 
+            "min": v["min"], 
+            "max": v["max"], 
+            "min_d": v["min_date"], 
+            "min_t": v["min_time"],
+            "max_d": v["max_date"], 
+            "max_t": v["max_time"]
+        } 
         for k, v in monthly_data.items()
     ]
     # Ordenar meses cronológicamente

@@ -8,7 +8,8 @@
     <title>Raspberry Pi - Monitor de Temperatura</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -161,7 +162,9 @@
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
                 <div class="flex items-center justify-between mb-4" style="min-height: 40px;">
-                    <h2 class="text-lg font-bold text-slate-700 dark:text-slate-200 border-b-2 border-orange-500 inline-block">Histórico</h2>
+                    <h2
+                        class="text-lg font-bold text-slate-700 dark:text-slate-200 border-b-2 border-orange-500 inline-block">
+                        Histórico</h2>
                     <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex gap-1">
                         <button id="btnView30" onclick="setHistoryView('30')"
                             class="px-3 py-1 text-sm rounded-md bg-white dark:bg-slate-600 shadow-sm text-slate-800 dark:text-slate-100 font-medium transition-all">30
@@ -177,12 +180,20 @@
 
         <footer class="flex justify-between items-center text-sm text-slate-400 border-t pt-6">
             <p id="lastUpdate" class="flex items-center">
-                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
                 Actualizado: {{LAST_UPDATE}}
             </p>
             <a href="temp.log" class="hover:text-orange-600 font-semibold underline flex items-center">
                 Descargar Datos Crudos (temp.log)
-                <svg class="w-4 h-4 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <svg class="w-4 h-4 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
             </a>
         </footer>
     </div>
@@ -310,7 +321,7 @@
                         type: 'time',
                         time: {
                             unit: 'hour',
-                            tooltipFormat: 'PPpp',
+                            tooltipFormat: 'dd/MM/yyyy HH:mm',
                             displayFormats: {
                                 hour: 'HH:mm'
                             }
@@ -376,10 +387,10 @@
 
                                 if (isMonthlyView) {
                                     if (context.dataset.label === 'Máxima' && d.max_d) {
-                                        label += ` (el ${d.max_d.substring(5)})`;
+                                        label += ` (${d.max_d.substring(8)}/${d.max_d.substring(5, 7)} - ${d.max_t})`;
                                     }
                                     if (context.dataset.label === 'Mínima' && d.min_d) {
-                                        label += ` (el ${d.min_d.substring(5)})`;
+                                        label += ` (${d.min_d.substring(8)}/${d.min_d.substring(5, 7)} - ${d.min_t})`;
                                     }
                                 } else {
                                     if (context.dataset.label === 'Máxima' && d.max_t) {
