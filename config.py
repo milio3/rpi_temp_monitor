@@ -21,4 +21,4 @@ TEMP_CRITICAL_THRESHOLD = 80.0  # Critical a partir de 80°C
 
 # Configuración de datos
 DAILY_HOURS = 24  # Horas de datos diarios a mostrar
-HISTORY_DAYS = 10  # Días de historial a mostrar
+HISTORY_DAYS = 30  # Días de historial a mostrar

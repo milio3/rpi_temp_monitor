@@ -8,6 +8,7 @@
     <title>Raspberry Pi - Monitor de Temperatura</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -276,10 +277,9 @@
         dailyChart = new Chart(document.getElementById('dailyChart'), {
             type: 'line',
             data: {
-                labels: dailyData.map(d => d.t),
                 datasets: [{
                     label: 'Temp °C',
-                    data: dailyData.map(d => d.v),
+                    data: dailyData,
                     borderColor: '#ea580c',
                     backgroundColor: 'rgba(234, 88, 12, 0.1)',
                     fill: true, tension: 0.4, pointRadius: 0, hoverPointRadius: 4
@@ -300,7 +300,18 @@
                     }
                 },
                 scales: {
-                    x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 8 } },
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            tooltipFormat: 'PPpp',
+                            displayFormats: {
+                                hour: 'HH:mm'
+                            }
+                        },
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, major: { enabled: true } }
+                    },
                     y: { grid: { color: gridColor }, ticks: { color: textColor } }
                 }
             }

@@ -236,8 +236,8 @@ def render_html(current_temp):
                     if parsed["type"] == "DATA" and parsed["datetime"] > limite_24h:
                         # Guardar datetime completo para ordenar después
                         daily_data.append({
-                            "t": parsed["datetime"].strftime("%H:%M"),
-                            "v": parsed["temp"],
+                            "x": parsed["datetime"].isoformat(),
+                            "y": parsed["temp"],
                             "dt": parsed["datetime"]  # Para ordenar
                         })
                     elif parsed["type"] == "SUMMARY":
@@ -257,7 +257,7 @@ def render_html(current_temp):
     # Ordenar datos diarios por timestamp
     daily_data.sort(key=lambda x: x["dt"])
     # Eliminar campo temporal dt antes de JSON
-    daily_data_clean = [{"t": d["t"], "v": d["v"]} for d in daily_data]
+    daily_data_clean = [{"x": d["x"], "y": d["y"]} for d in daily_data]
     
     # Ordenar historial por fecha (reciente a antiguo para procesar meses)
     history_data.sort(key=lambda x: x["dt"], reverse=True)
