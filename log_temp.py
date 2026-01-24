@@ -267,14 +267,24 @@ def render_html(current_temp):
     for h in history_data:
         month_key = h["dt"].strftime("%Y-%m")
         if month_key not in monthly_data:
-            monthly_data[month_key] = {"min": h["min"], "max": h["max"], "days": 0}
+            monthly_data[month_key] = {
+                "min": h["min"], 
+                "max": h["max"], 
+                "min_date": h["d"],
+                "max_date": h["d"],
+                "days": 0
+            }
         else:
-            monthly_data[month_key]["min"] = min(monthly_data[month_key]["min"], h["min"])
-            monthly_data[month_key]["max"] = max(monthly_data[month_key]["max"], h["max"])
+            if h["min"] < monthly_data[month_key]["min"]:
+                monthly_data[month_key]["min"] = h["min"]
+                monthly_data[month_key]["min_date"] = h["d"]
+            if h["max"] > monthly_data[month_key]["max"]:
+                monthly_data[month_key]["max"] = h["max"]
+                monthly_data[month_key]["max_date"] = h["d"]
         monthly_data[month_key]["days"] += 1
         
     monthly_data_clean = [
-        {"d": k, "min": v["min"], "max": v["max"]} 
+        {"d": k, "min": v["min"], "max": v["max"], "min_d": v["min_date"], "max_d": v["max_date"]} 
         for k, v in monthly_data.items()
     ]
     # Ordenar meses cronológicamente

@@ -146,21 +146,22 @@
             <div class="text-right">
                 <p class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-1">Temperatura Actual</p>
                 <p id="currentTemp" class="text-6xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
-                    38.95 °C</p>
+                    39.43 °C</p>
             </div>
 
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <h2 class="text-lg font-bold mb-4 text-slate-700 border-b-2 border-orange-500 inline-block">Últimas 24
-                    Horas</h2>
+                <div class="flex items-center justify-between mb-4" style="min-height: 40px;">
+                    <h2 class="text-lg font-bold text-slate-700 border-b-2 border-orange-500 inline-block">Últimas 24
+                        Horas</h2>
+                </div>
                 <div class="h-64"><canvas id="dailyChart"></canvas></div>
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <div
-                    class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
-                    <h2 class="text-lg font-bold text-slate-700 dark:text-slate-200">Histórico</h2>
+                <div class="flex items-center justify-between mb-4" style="min-height: 40px;">
+                    <h2 class="text-lg font-bold text-slate-700 dark:text-slate-200 border-b-2 border-orange-500 inline-block">Histórico</h2>
                     <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex gap-1">
                         <button id="btnView30" onclick="setHistoryView('30')"
                             class="px-3 py-1 text-sm rounded-md bg-white dark:bg-slate-600 shadow-sm text-slate-800 dark:text-slate-100 font-medium transition-all">30
@@ -175,20 +176,25 @@
         </div>
 
         <footer class="flex justify-between items-center text-sm text-slate-400 border-t pt-6">
-            <p id="lastUpdate">Actualizado: 01:50:02</p>
-            <a href="temp.log" class="hover:text-orange-600 font-semibold underline">Descargar Datos Crutos
-                (temp.log)</a>
+            <p id="lastUpdate" class="flex items-center">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Actualizado: 12:40:01
+            </p>
+            <a href="temp.log" class="hover:text-orange-600 font-semibold underline flex items-center">
+                Descargar Datos Crudos (temp.log)
+                <svg class="w-4 h-4 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            </a>
         </footer>
     </div>
 
     <script>
         let dailyChart, historyChart;
-        const CURRENT_TEMP_VALUE = parseFloat('38.95');
+        const CURRENT_TEMP_VALUE = parseFloat('39.43');
 
         // Datos inyectados desde Python
-        const dailyData = JSON.parse('[{"x": "2026-01-24T00:00:01", "y": 37.48}, {"x": "2026-01-24T00:10:01", "y": 37.97}, {"x": "2026-01-24T00:20:01", "y": 38.46}, {"x": "2026-01-24T00:30:01", "y": 38.95}, {"x": "2026-01-24T00:40:02", "y": 38.95}, {"x": "2026-01-24T00:50:01", "y": 38.46}, {"x": "2026-01-24T01:00:01", "y": 38.46}, {"x": "2026-01-24T01:10:02", "y": 37.97}, {"x": "2026-01-24T01:20:01", "y": 38.46}, {"x": "2026-01-24T01:30:01", "y": 40.89}, {"x": "2026-01-24T01:40:01", "y": 40.41}, {"x": "2026-01-24T01:50:02", "y": 38.95}]');
+        const dailyData = JSON.parse('[{"x": "2026-01-24T00:00:01", "y": 37.48}, {"x": "2026-01-24T00:10:01", "y": 37.97}, {"x": "2026-01-24T00:20:01", "y": 38.46}, {"x": "2026-01-24T00:30:01", "y": 38.95}, {"x": "2026-01-24T00:40:02", "y": 38.95}, {"x": "2026-01-24T00:50:01", "y": 38.46}, {"x": "2026-01-24T01:00:01", "y": 38.46}, {"x": "2026-01-24T01:10:02", "y": 37.97}, {"x": "2026-01-24T01:20:01", "y": 38.46}, {"x": "2026-01-24T01:30:01", "y": 40.89}, {"x": "2026-01-24T01:40:01", "y": 40.41}, {"x": "2026-01-24T01:50:02", "y": 38.95}, {"x": "2026-01-24T02:00:01", "y": 38.95}, {"x": "2026-01-24T02:10:01", "y": 39.43}, {"x": "2026-01-24T02:20:02", "y": 37.48}, {"x": "2026-01-24T02:30:01", "y": 38.46}, {"x": "2026-01-24T02:40:01", "y": 38.46}, {"x": "2026-01-24T02:50:01", "y": 38.46}, {"x": "2026-01-24T03:00:01", "y": 38.46}, {"x": "2026-01-24T03:10:01", "y": 37.0}, {"x": "2026-01-24T03:20:02", "y": 37.97}, {"x": "2026-01-24T03:30:01", "y": 39.43}, {"x": "2026-01-24T03:40:01", "y": 38.46}, {"x": "2026-01-24T03:50:01", "y": 37.97}, {"x": "2026-01-24T04:00:02", "y": 38.95}, {"x": "2026-01-24T04:10:01", "y": 39.43}, {"x": "2026-01-24T04:20:01", "y": 38.46}, {"x": "2026-01-24T04:30:02", "y": 38.46}, {"x": "2026-01-24T04:40:01", "y": 37.48}, {"x": "2026-01-24T04:50:01", "y": 37.97}, {"x": "2026-01-24T05:00:01", "y": 37.97}, {"x": "2026-01-24T05:10:01", "y": 37.0}, {"x": "2026-01-24T05:20:01", "y": 37.97}, {"x": "2026-01-24T05:30:01", "y": 38.46}, {"x": "2026-01-24T05:40:01", "y": 38.46}, {"x": "2026-01-24T05:50:01", "y": 37.97}, {"x": "2026-01-24T06:00:01", "y": 37.97}, {"x": "2026-01-24T06:10:02", "y": 37.97}, {"x": "2026-01-24T06:20:01", "y": 37.0}, {"x": "2026-01-24T06:30:01", "y": 37.48}, {"x": "2026-01-24T06:40:01", "y": 37.48}, {"x": "2026-01-24T06:50:01", "y": 37.48}, {"x": "2026-01-24T07:00:01", "y": 37.0}, {"x": "2026-01-24T07:10:02", "y": 37.48}, {"x": "2026-01-24T07:20:01", "y": 37.0}, {"x": "2026-01-24T07:30:02", "y": 37.97}, {"x": "2026-01-24T07:40:01", "y": 36.51}, {"x": "2026-01-24T07:50:01", "y": 37.48}, {"x": "2026-01-24T08:00:01", "y": 36.51}, {"x": "2026-01-24T08:10:02", "y": 36.51}, {"x": "2026-01-24T08:20:01", "y": 36.02}, {"x": "2026-01-24T08:30:01", "y": 37.48}, {"x": "2026-01-24T08:40:02", "y": 37.48}, {"x": "2026-01-24T08:50:01", "y": 36.02}, {"x": "2026-01-24T09:00:01", "y": 36.02}, {"x": "2026-01-24T09:10:02", "y": 37.0}, {"x": "2026-01-24T09:20:01", "y": 35.54}, {"x": "2026-01-24T09:30:01", "y": 35.54}, {"x": "2026-01-24T09:40:02", "y": 36.51}, {"x": "2026-01-24T09:50:01", "y": 36.51}, {"x": "2026-01-24T10:00:01", "y": 37.0}, {"x": "2026-01-24T10:10:01", "y": 36.51}, {"x": "2026-01-24T10:20:01", "y": 37.48}, {"x": "2026-01-24T10:30:01", "y": 37.48}, {"x": "2026-01-24T10:40:01", "y": 37.0}, {"x": "2026-01-24T10:50:02", "y": 37.0}, {"x": "2026-01-24T11:00:01", "y": 37.97}, {"x": "2026-01-24T11:10:01", "y": 36.51}, {"x": "2026-01-24T11:20:02", "y": 37.48}, {"x": "2026-01-24T11:30:01", "y": 37.97}, {"x": "2026-01-24T11:40:01", "y": 38.46}, {"x": "2026-01-24T11:50:01", "y": 38.46}, {"x": "2026-01-24T12:00:02", "y": 37.97}, {"x": "2026-01-24T12:10:01", "y": 37.97}, {"x": "2026-01-24T12:20:01", "y": 41.38}, {"x": "2026-01-24T12:30:00", "y": 39.43}, {"x": "2026-01-24T12:30:02", "y": 40.89}, {"x": "2026-01-24T12:40:01", "y": 39.43}]');
         const historyData = JSON.parse('[{"d": "2026-01-05", "min": 56.3, "max": 58.5, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-06", "min": 34.56, "max": 59.89, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-07", "min": 35.05, "max": 41.38, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-08", "min": 35.54, "max": 39.92, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-09", "min": 35.05, "max": 41.87, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-10", "min": 35.05, "max": 43.33, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-11", "min": 36.02, "max": 40.41, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-12", "min": 35.54, "max": 42.35, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-13", "min": 36.51, "max": 41.87, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-14", "min": 37.0, "max": 41.87, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-15", "min": 36.51, "max": 41.38, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-16", "min": 37.0, "max": 42.84, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-17", "min": 36.51, "max": 42.84, "min_t": "00:00", "max_t": "00:00"}, {"d": "2026-01-18", "min": 36.51, "max": 47.23, "min_t": "09:50", "max_t": "13:10"}, {"d": "2026-01-19", "min": 36.51, "max": 42.84, "min_t": "06:20", "max_t": "12:00"}, {"d": "2026-01-20", "min": 36.51, "max": 40.89, "min_t": "05:40", "max_t": "09:20"}, {"d": "2026-01-21", "min": 36.51, "max": 41.87, "min_t": "06:50", "max_t": "10:10"}, {"d": "2026-01-22", "min": 36.51, "max": 41.38, "min_t": "06:30", "max_t": "12:30"}, {"d": "2026-01-23", "min": 36.51, "max": 42.35, "min_t": "07:30", "max_t": "10:00"}]');
-        const monthlyData = JSON.parse('[{"d": "2026-01", "min": 34.56, "max": 59.89}]');
+        const monthlyData = JSON.parse('[{"d": "2026-01", "min": 34.56, "max": 59.89, "min_d": "2026-01-06", "max_d": "2026-01-06"}]');
 
         // --- Gestión de Tema ---
         function initTheme() {
@@ -310,7 +316,7 @@
                             }
                         },
                         grid: { color: gridColor },
-                        ticks: { color: textColor, major: { enabled: true } }
+                        ticks: { color: textColor, major: { enabled: true }, maxRotation: 45, minRotation: 45 }
                     },
                     y: { grid: { color: gridColor }, ticks: { color: textColor } }
                 }
@@ -348,7 +354,7 @@
         historyChart = new Chart(document.getElementById('historyChart'), {
             type: 'line',
             data: {
-                labels: historyData.map(d => d.d),
+                labels: historyData.map(d => d.d.substring(5)),
                 datasets: getHistoryDatasets(historyData, false)
             },
             options: {
@@ -368,11 +374,20 @@
                                 let val = context.parsed.y;
                                 let label = context.dataset.label + ': ' + val + '°C';
 
-                                if (context.dataset.label === 'Máxima' && !isMonthlyView && d.max_t) {
-                                    label += ` (${d.max_t})`;
-                                }
-                                if (context.dataset.label === 'Mínima' && !isMonthlyView && d.min_t) {
-                                    label += ` (${d.min_t})`;
+                                if (isMonthlyView) {
+                                    if (context.dataset.label === 'Máxima' && d.max_d) {
+                                        label += ` (el ${d.max_d.substring(5)})`;
+                                    }
+                                    if (context.dataset.label === 'Mínima' && d.min_d) {
+                                        label += ` (el ${d.min_d.substring(5)})`;
+                                    }
+                                } else {
+                                    if (context.dataset.label === 'Máxima' && d.max_t) {
+                                        label += ` (${d.max_t})`;
+                                    }
+                                    if (context.dataset.label === 'Mínima' && d.min_t) {
+                                        label += ` (${d.min_t})`;
+                                    }
                                 }
                                 return label;
                             }
@@ -403,7 +418,7 @@
             } else {
                 btn30.className = activeClass;
                 btnMonth.className = inactiveClass;
-                historyChart.data.labels = historyData.map(d => d.d);
+                historyChart.data.labels = historyData.map(d => d.d.substring(5));
                 historyChart.data.datasets = getHistoryDatasets(historyData, false);
             }
             historyChart.update();
