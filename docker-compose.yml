@@ -4,7 +4,6 @@ services:
   webapp:
     build: .
     container_name: rpi_temp_webapp
-    user: "1000:1000"
     command: python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8085:8000"
@@ -25,7 +24,6 @@ services:
   monitor:
     build: .
     container_name: rpi_temp_monitor
-    user: "1000:1000"
     command: python -m app.services.monitor
     restart: unless-stopped
     privileged: true # Necesario para acceder a hardware sensores en algunos casos
