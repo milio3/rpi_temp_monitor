@@ -1,20 +1,20 @@
-# Monitor de Temperatura - Raspberry Pi (v3.0)
+# 🌡️ Monitor de Temperatura - Raspberry Pi (v3.1)
 
 Sistema de monitoreo profesional de temperatura para Raspberry Pi utilizando **FastAPI**, **SQLite**, **Docker** y una **SPA** moderna.
 
-## Características
+## ✨ Características
 
--   **Arquitectura Modular**: Backend FastAPI reestructurado siguiendo principios SOLID.
--   **Despliegue Docker**: Contenedorizado y optimizado para Portainer.
--   **Base de Datos SQLite**: Almacenamiento eficiente de lecturas históricas.
--   **Visualización Avanzada**:
+-   **🏗️ Arquitectura Modular**: Backend FastAPI reestructurado siguiendo principios SOLID.
+-   **🐳 Despliegue Docker**: Contenedorizado y optimizado para Portainer.
+-   **💾 Base de Datos SQLite**: Almacenamiento eficiente de lecturas históricas.
+-   **📊 Visualización Avanzada**:
     -   Gráfico de actividad 24h.
-    -   Histórico de 30 días con máximas y mínimas.
+    -   Histórico de 15 días con máximas y mínimas.
     -   Modal de estadísticas mensuales/anuales.
--   **Resilient**: Servicio de monitoreo independiente que persiste datos ante caídas del servidor web.
--   **Interfaz Reactiva**: Actualización en tiempo real sin recargas de página.
+-   **🛡️ Resilient**: Servicio de monitoreo independiente que persiste datos ante caídas del servidor web.
+-   **⚡ Interfaz Reactiva**: Actualización en tiempo real sin recargas de página.
 
-## Estructura del Proyecto
+## 📂 Estructura del Proyecto
 
 ```
 rpi_temp_monitor/
@@ -34,7 +34,7 @@ rpi_temp_monitor/
 └── Dockerfile              # Definición de imagen
 ```
 
-## Instalación y Despliegue
+## 🚀 Instalación y Despliegue
 
 ### Opción Recomendada: Docker / Portainer
 
@@ -59,12 +59,23 @@ Sigue la guía detallada en [docs/GUIA_RPI.md](docs/GUIA_RPI.md).
     python -m app.services.monitor
     ```
 
-## Changelog
+## 📝 Changelog
+
+### v3.1.0 (2026-01-25) - UI Polish Update 🎨
+-   **📊 Gráficas Mejoradas**:
+    -   Aumento de legibilidad en ejes (fuentes más grandes y mayor contraste).
+    -   Optimización de escalas: Gráfico histórico ajustado a **15 días** para mayor detalle.
+    -   Ajuste de densidad de etiquetas (6-7 items) para evitar saturación visual.
+    -   Mejorado el espaciado (padding) en los ejes X.
+-   **📅 Formato de Fechas**: Estandarización a 2 dígitos (`DD/MM`) en tooltips y modales para una apariencia más profesional.
+-   **🖼️ Ajustes UI**:
+    -   Centrado vertical perfecto en listas de estadísticas mensuales.
+    -   Refinamiento de colores en el tema oscuro.
 
 ### v3.0.0 (2026-01-25)
 -   **Refactor Completo**: Reescritura del backend a una estructura modular de FastAPI (`app/api`, `app/services`, etc).
 -   **Configuración Centralizada**: Implementación de `pydantic-settings` para gestión robusta de configuración y rutas.
--   **Docker**: Optimización de `Dockerfile` y `docker-compose.yml` para despliegues seguros en Portainer (eliminación de volúmenes de desarrollo por defecto).
+-   **Docker**: Optimización de `Dockerfile` y `docker-compose.yml` para despliegues seguros en Portainer.
 -   **Limpieza**: Eliminación de scripts legacy y archivos redundantes en la raíz.
 -   **UI**: Corrección de unidades de temperatura (ºC) y mejoras visuales.
 

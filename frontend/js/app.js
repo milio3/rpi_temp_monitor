@@ -168,15 +168,15 @@ function renderMonthlyStatsPreview(data) {
         html += `
         <div class="stats-row glass-card grid grid-cols-3 gap-3 px-3 py-3 items-center text-sm cursor-default group hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
              
-            <div class="text-center font-bold text-indigo-100 group-hover:text-white transition-colors capitalize text-xs tracking-wide">
+            <div class="text-center font-bold text-indigo-100 group-hover:text-white transition-colors capitalize text-xs tracking-wide leading-none flex items-center justify-center h-full">
                 ${monthName}
             </div>
             
-            <div class="text-center font-mono font-bold text-cyan-300 bg-cyan-900/50 border border-cyan-500/30 rounded-md py-1.5 shadow-sm">
+            <div class="flex items-center justify-center font-mono font-bold text-cyan-300 bg-cyan-900/50 border border-cyan-500/30 rounded-md py-1.5 shadow-sm">
                 ${tempFormatter.format(m.min)}
             </div>
             
-            <div class="text-center font-mono font-bold text-pink-300 bg-pink-900/50 border border-pink-500/30 rounded-md py-1.5 shadow-sm">
+            <div class="flex items-center justify-center font-mono font-bold text-pink-300 bg-pink-900/50 border border-pink-500/30 rounded-md py-1.5 shadow-sm">
                 ${tempFormatter.format(m.max)}
             </div>
         </div>`;
@@ -243,7 +243,7 @@ function createModalMonthRow(m) {
             <span class="text-[10px] font-bold text-cyan-500 uppercase tracking-wider">Min</span>
             <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
                 <span class="font-mono text-cyan-100 font-bold text-base bg-transparent">${tempFormatter.format(m.min)}°</span>
-                <span class="text-xs text-cyan-200/60 font-mono whitespace-nowrap">(${minDate.getDate()}/${minDate.getMonth() + 1} - ${timeFormatter.format(minDate)})</span>
+                <span class="text-xs text-cyan-200/60 font-mono whitespace-nowrap">(${minDate.getDate().toString().padStart(2, '0')}/${(minDate.getMonth() + 1).toString().padStart(2, '0')} - ${timeFormatter.format(minDate)})</span>
             </div>
         </div>
         
@@ -252,7 +252,7 @@ function createModalMonthRow(m) {
              <span class="text-[10px] font-bold text-pink-500 uppercase tracking-wider">Max</span>
              <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
                  <span class="font-mono text-pink-100 font-bold text-base bg-transparent">${tempFormatter.format(m.max)}°</span>
-                 <span class="text-xs text-pink-200/60 font-mono whitespace-nowrap">(${maxDate.getDate()}/${maxDate.getMonth() + 1} - ${timeFormatter.format(maxDate)})</span>
+                 <span class="text-xs text-pink-200/60 font-mono whitespace-nowrap">(${maxDate.getDate().toString().padStart(2, '0')}/${(maxDate.getMonth() + 1).toString().padStart(2, '0')} - ${timeFormatter.format(maxDate)})</span>
             </div>
         </div>
     </div>`;
@@ -327,12 +327,13 @@ function initDailyChart() {
                     type: 'time',
                     time: { unit: 'hour', displayFormats: { hour: 'HH:mm' }, tooltipFormat: 'dd/MM HH:mm' },
                     grid: { display: false },
-                    ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 6, font: { size: 11 }, color: '#64748b' }
+                    offset: true,
+                    ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 6, font: { size: 13 }, color: '#cbd5e1' }
                 },
                 y: {
                     grid: { color: 'rgba(255,255,255,0.05)' },
                     border: { display: false },
-                    ticks: { color: '#64748b' }
+                    ticks: { font: { size: 12 }, color: '#cbd5e1' }
                 }
             }
         }
@@ -411,12 +412,13 @@ function initHistoryChart() {
                 x: {
                     type: 'category',
                     grid: { display: false },
-                    ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10, font: { size: 10 }, color: '#64748b' }
+                    offset: true,
+                    ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 7, font: { size: 13 }, color: '#cbd5e1' }
                 },
                 y: {
                     grid: { color: 'rgba(255,255,255,0.05)' },
                     border: { display: false },
-                    ticks: { color: '#64748b' }
+                    ticks: { font: { size: 12 }, color: '#cbd5e1' }
                 }
             }
         }
@@ -441,7 +443,7 @@ function processAndRenderHistoryChart(dailyRaw) {
     });
 
     const sortedDays = Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date));
-    const recentDays = sortedDays.slice(-30);
+    const recentDays = sortedDays.slice(-15);
 
     // Etiquetas visuales (DD Mes)
     const visualLabels = recentDays.map(d => {
