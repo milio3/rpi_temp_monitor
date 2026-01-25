@@ -96,7 +96,7 @@ function renderCurrentTemp(data) {
 
     els.forEach(el => {
         if (!el) return;
-        el.innerText = `${tempFormatter.format(temp)}°`;
+        el.innerText = `${tempFormatter.format(temp)} ºC`;
 
         // Color dinámico según temperatura
         el.className = el.className.replace(/text-\[.*?\]/g, ''); // Limpiar colores custom previos si los hubiera

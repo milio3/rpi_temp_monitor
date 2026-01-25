@@ -9,10 +9,10 @@ services:
       - "8085:8000"
     volumes:
       - ./data:/app/backend/data_storage # Persistencia de datos
-      - ./backend:/app/backend # Desarrollo (opcional)
+      # - ./backend:/app/backend # Desarrollo (descomentar solo si se necesita edición en local)
     restart: unless-stopped
     environment:
-      - DB_PATH=/app/backend/data_storage/database.db
+      - DATABASE_URL=sqlite:////app/backend/data_storage/database.db
       - TZ=Europe/Madrid
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8000/docs || exit 1" ]
@@ -24,11 +24,11 @@ services:
   monitor:
     build: .
     container_name: rpi_temp_monitor
-    command: python monitor_service.py
+    command: python -m app.services.monitor
     restart: unless-stopped
     privileged: true # Necesario para acceder a hardware sensores en algunos casos
     environment:
-      - DB_PATH=/app/backend/data_storage/database.db
+      - DATABASE_URL=sqlite:////app/backend/data_storage/database.db
       - TZ=Europe/Madrid
     volumes:
       - ./data:/app/backend/data_storage

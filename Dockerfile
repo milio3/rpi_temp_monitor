@@ -3,6 +3,7 @@ FROM python:3.10-slim
 
 # Evitar que Python genere archivos pyc
 ENV PYTHONDONTWRITEBYTECODE=1
+
 # Evitar buffer en logs
 ENV PYTHONUNBUFFERED=1
 
@@ -28,4 +29,4 @@ COPY frontend/ /app/frontend/
 WORKDIR /app/backend
 
 # Comando por defecto (se sobrescribe en docker-compose)
-CMD ["python", "monitor_service.py"]
+CMD ["python", "-m", "app.services.monitor"]
