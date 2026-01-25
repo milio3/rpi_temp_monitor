@@ -1,17 +1,18 @@
-# Monitor de Temperatura - Raspberry Pi (v2.1)
+# Monitor de Temperatura - Raspberry Pi (v3.0)
 
-Sistema de monitoreo profesional de temperatura para Raspberry Pi utilizando **FastAPI**, **SQLite** y una **SPA** moderna.
+Sistema de monitoreo profesional de temperatura para Raspberry Pi utilizando **FastAPI**, **SQLite**, **Docker** y una **SPA** moderna.
 
 ## Características
 
-- **Arquitectura Cliente-Servidor**: Backend FastAPI + Frontend HTML/JS desacoplado.
-- **Base de Datos SQLite**: Almacenamiento eficiente de lecturas históricas.
-- **Visualización Avanzada**:
-  - Gráfico de actividad 24h (intervalos de 1 hora, interpolados).
-  - Histórico de 30 días (Mínimas y Máximas diarias).
-  - **Modal de Estadísticas**: Histórico completo mensual organizado por años.
-- **Resilient**: Servicio de monitoreo independiente que persiste datos ante caídas del servidor web.
-- **Interfaz Reactiva**: Actualización en tiempo real sin recargas de página.
+-   **Arquitectura Modular**: Backend FastAPI reestructurado siguiendo principios SOLID.
+-   **Despliegue Docker**: Contenedorizado y optimizado para Portainer.
+-   **Base de Datos SQLite**: Almacenamiento eficiente de lecturas históricas.
+-   **Visualización Avanzada**:
+    -   Gráfico de actividad 24h.
+    -   Histórico de 30 días con máximas y mínimas.
+    -   Modal de estadísticas mensuales/anuales.
+-   **Resilient**: Servicio de monitoreo independiente que persiste datos ante caídas del servidor web.
+-   **Interfaz Reactiva**: Actualización en tiempo real sin recargas de página.
 
 ## Estructura del Proyecto
 
@@ -19,64 +20,57 @@ Sistema de monitoreo profesional de temperatura para Raspberry Pi utilizando **F
 rpi_temp_monitor/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py          # API Web Server (FastAPI)
-│   │   ├── models.py        # Modelos de Datos (SQLModel)
-│   │   └── database.py      # Conexión DB
-│   ├── monitor_service.py   # Servicio de lectura de sensores (Background)
-│   ├── seed_full_reboot.py  # Script de utilidad (Reset DB)
-│   └── database.db          # Base de datos SQLite
-├── frontend/
-│   ├── index.html           # Single Page Application
-│   └── js/
-│       └── app.js           # Lógica Frontend
-└── requirements.txt
+│   │   ├── api/            # Endpoints API (Routers)
+│   │   ├── core/           # Configuración (Pydantic Settings)
+│   │   ├── schemas/        # Schemas Pydantic
+│   │   ├── services/       # Lógica de negocio (Monitor)
+│   │   ├── main.py         # Entrypoint
+│   │   └── database.py     # Session Manager
+│   └── requirements.txt
+├── frontend/               # Single Page Application
+├── scripts/                # Scripts de utilidad (migraciones, etc)
+├── docs/                   # Guías de despliegue
+├── docker-compose.yml      # Orquestación de contenedores
+└── Dockerfile              # Definición de imagen
 ```
 
-## Instalación y Ejecución
+## Instalación y Despliegue
 
-### 1. Prerrequisitos
-- Python 3.9+
-- Entorno virtual (recomendado)
+### Opción Recomendada: Docker / Portainer
 
-### 2. Configuración Inicial
-```bash
-# Crear entorno virtual
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# .\venv\Scripts\activate  # Windows
+Sigue la guía detallada en [docs/GUIA_RPI.md](docs/GUIA_RPI.md).
 
-# Instalar dependencias
-pip install -r backend/requirements.txt
-```
+### Desarrollo Local (sin Docker)
 
-### 3. Ejecutar Servicios
-Se necesitan dos terminales (o configurar como servicios systemd):
+1.  **Instalar dependencias**:
+    ```bash
+    pip install -r backend/requirements.txt
+    ```
 
-**Terminal 1: Servidor Web (Backend + Frontend)**
-```bash
-# Desde la carpeta raíz del proyecto
-cd backend
-../venv/Scripts/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-Acceder a: `http://localhost:8000`
+2.  **Ejecutar Backend**:
+    ```bash
+    cd backend
+    python -m uvicorn app.main:app --reload
+    ```
 
-**Terminal 2: Servicio de Monitoreo**
-Este script lee la temperatura cada 10 minutos y la guarda en SQLite.
-```bash
-# Desde la carpeta raíz del proyecto
-cd backend
-../venv/Scripts/python monitor_service.py
-```
+3.  **Ejecutar Servicio de Monitoreo** (Simulado en Windows):
+    ```bash
+    cd backend
+    python -m app.services.monitor
+    ```
 
-## Migración de Datos (Opcional)
-Si necesitas reiniciar la base de datos e importar datos antiguos (`legacy/temp.log`):
-```bash
-cd backend
-../venv/Scripts/python seed_full_reboot.py
-```
+## Changelog
 
-## Configuración en Raspberry Pi (Systemd)
-Para que arranque automáticamente, crea dos servicios en `/etc/systemd/system/`:
+### v3.0.0 (2026-01-25)
+-   **Refactor Completo**: Reescritura del backend a una estructura modular de FastAPI (`app/api`, `app/services`, etc).
+-   **Configuración Centralizada**: Implementación de `pydantic-settings` para gestión robusta de configuración y rutas.
+-   **Docker**: Optimización de `Dockerfile` y `docker-compose.yml` para despliegues seguros en Portainer (eliminación de volúmenes de desarrollo por defecto).
+-   **Limpieza**: Eliminación de scripts legacy y archivos redundantes en la raíz.
+-   **UI**: Corrección de unidades de temperatura (ºC) y mejoras visuales.
 
-1. `rpi-monitor-web.service` (para uvicorn)
-2. `rpi-monitor-logger.service` (para monitor_service.py)
+### v2.1.0
+-   Mejoras en gráficas históricas.
+-   Soporte para visualización mensual.
+
+### v1.0.0
+-   Versión inicial con Flask/FastAPI básico.
