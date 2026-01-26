@@ -51,5 +51,22 @@ Si tienes un fichero `temp.log` antiguo y quieres importar sus datos:
 
 ## Notas Técnicas
 
--   **Docker Compose**: El fichero `docker-compose.yml` ya expone el puerto `8085` y monta `/sys` en modo lectura para leer la temperatura de la CPU.
 -   **Sin deploy.sh**: El script `deploy.sh` antiguo se ha movido a `scripts/deploy.sh` pero **no es necesario** si usas Portainer.
+
+## 4. Solución de Errores Comunes
+
+### Error: "attempt to write a readonly database"
+
+Si ves este error en los logs, es porque el contenedor ahora corre como usuario no privilegiado (`1000:1000`) por seguridad, pero la carpeta de datos pertenece a `root`.
+
+**Solución**:
+Ejecuta este comando en la terminal de tu Raspberry Pi para dar permisos al usuario por defecto:
+
+```bash
+# Si usas una ruta volumen personalizada (ej: /home/pi/rpi_data)
+sudo chown -R 1000:1000 /home/pi/rpi_data
+
+# Si usas la ruta por defecto de Portainer/Docker (busca tu volumen)
+# Opción rápida: dar permisos a 'otros' (menos seguro pero funcional en entornos aislados)
+sudo chmod 777 -R path/to/your/volume
+```
