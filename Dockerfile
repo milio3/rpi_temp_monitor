@@ -1,32 +1,36 @@
-# Usar una imagen ligera de Python (compatible con ARM/RPi)
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-# Evitar que Python genere archivos pyc
-ENV PYTHONDONTWRITEBYTECODE=1
+# Gestor ultrarrápido y seguro de dependencias uv oficial
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Evitar buffer en logs
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_SYSTEM_PYTHON=1 \
+    UV_NO_CACHE=1
 
-# Establecer directorio de trabajo
 WORKDIR /app
 
-# Instalar dependencias del sistema si fueran necesarias (opcional)
-# RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
+# Crear usuario sin privilegios para mitigar riesgos de seguridad
+RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
 
-# Copiar requirements primero para aprovechar caché de capas (se encuentra en backend/)
-COPY backend/requirements.txt .
+# Instalar dependencias mínimas del sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sqlite3 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalar dependencias de Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Instalar dependencias de Python mediante uv
+COPY requirements.txt .
+RUN uv pip install --system -r requirements.txt
 
-# Copiar el código del backend
-COPY backend/ /app/backend/
+# Copiar el código fuente modular
+COPY app/ ./app/
 
-# Copiar el frontend (para servir estáticos)
-COPY frontend/ /app/frontend/
+# Crear directorio de datos persistentes y asignar propiedad al usuario no privilegiado
+RUN mkdir -p /app/data && chown -R appuser:appuser /app
 
-# Establecer el directorio de trabajo donde está el código a ejecutar
-WORKDIR /app/backend
+USER appuser
 
-# Comando por defecto (se sobrescribe en docker-compose)
-CMD ["python", "-m", "app.services.monitor"]
+EXPOSE 8000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

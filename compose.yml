@@ -1,0 +1,29 @@
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rpi_temp_webapp
+    restart: unless-stopped
+    ports:
+      - "8085:8000"
+    environment:
+      - TZ=Europe/Madrid
+      - DATABASE_URL=sqlite:////app/data/database.db
+      - TEMP_SENSOR_PATH=/sys/class/thermal/thermal_zone0/temp
+      - CHECK_INTERVAL=600
+    volumes:
+      # Persistencia de base de datos externa en el host
+      - ./data:/app/data
+      # Montura de solo lectura para los sensores térmicos de hardware en Raspberry Pi
+      - /sys:/sys:ro
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
