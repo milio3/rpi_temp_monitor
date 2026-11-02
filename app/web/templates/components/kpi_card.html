@@ -1,21 +1,42 @@
 {% from "components/icon.html" import icon %}
-{% macro kpi_card(title, value, unit="", subtitle="", icon_name="thermometer", status="normal") %}
-  <div class="p-6 bg-[#20252C] border border-[#414B58] rounded-xl shadow-sm flex flex-col justify-between hover:border-[#596575] transition-colors">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-base font-medium text-[#C4CBD4]">{{ title }}</span>
-      <div class="p-2 rounded-lg bg-[#282F38] text-[#8AB4F8] border border-[#414B58]">
-        {{ icon(icon_name, class="w-5 h-5") }}
+{% macro kpi_card(title, value, unit="", subtitle="", icon_name="thermometer", tone="default") %}
+  {#
+    tone: 'blue' (mínima), 'red' (máxima), 'emerald' (positivo/margen), 'purple' / 'default' (neutro/promedio)
+  #}
+  {% if tone == "blue" %}
+    {% set border_class = "border-[#414B58] hover:border-[#8AB4F8]/60" %}
+    {% set badge_icon_bg = "bg-[#1E293B] text-[#8AB4F8] border-[#8AB4F8]/30" %}
+    {% set val_color = "text-[#8AB4F8]" %}
+  {% elif tone == "red" %}
+    {% set border_class = "border-[#414B58] hover:border-[#FF9292]/60" %}
+    {% set badge_icon_bg = "bg-[#331E24] text-[#FF9292] border-[#FF9292]/30" %}
+    {% set val_color = "text-[#FF9292]" %}
+  {% elif tone == "emerald" %}
+    {% set border_class = "border-[#414B58] hover:border-[#7DD9A5]/60" %}
+    {% set badge_icon_bg = "bg-[#1C3329] text-[#7DD9A5] border-[#7DD9A5]/30" %}
+    {% set val_color = "text-[#7DD9A5]" %}
+  {% else %}
+    {% set border_class = "border-[#414B58] hover:border-[#A6C7FF]/40" %}
+    {% set badge_icon_bg = "bg-[#282F38] text-[#C4CBD4] border-[#414B58]" %}
+    {% set val_color = "text-[#F0F2F5]" %}
+  {% endif %}
+
+  <div class="px-5 py-3.5 bg-[#20252C] border {{ border_class }} rounded-xl shadow-sm flex flex-col justify-between transition-colors min-w-0">
+    <div class="flex items-center justify-between gap-2 mb-1">
+      <span class="text-sm font-medium text-[#C4CBD4] whitespace-nowrap overflow-hidden text-ellipsis">{{ title }}</span>
+      <div class="p-1.5 rounded-lg border {{ badge_icon_bg }} flex-shrink-0">
+        {{ icon(icon_name, class="w-4 h-4") }}
       </div>
     </div>
     <div>
-      <div class="flex items-baseline gap-1.5">
-        <span class="text-3xl md:text-4xl font-bold tracking-tight text-[#F0F2F5]">{{ value }}</span>
+      <div class="flex items-baseline gap-1">
+        <span class="text-2xl xl:text-3xl font-extrabold tracking-tight {{ val_color }} whitespace-nowrap">{{ value }}</span>
         {% if unit %}
-          <span class="text-xl font-medium text-[#ADB6C2]">{{ unit }}</span>
+          <span class="text-sm xl:text-base font-medium text-[#ADB6C2]">{{ unit }}</span>
         {% endif %}
       </div>
       {% if subtitle %}
-        <p class="mt-2 text-sm text-[#ADB6C2] flex items-center gap-1.5">
+        <p class="mt-1 text-xs text-[#ADB6C2] whitespace-nowrap overflow-hidden text-ellipsis" title="{{ subtitle }}">
           {{ subtitle }}
         </p>
       {% endif %}

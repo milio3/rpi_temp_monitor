@@ -1,37 +1,37 @@
 {% from "components/icon.html" import icon %}
 <div id="monthly-table-container" class="overflow-x-auto">
-  <table class="w-full text-left border-collapse">
+  <table class="w-full text-left border-collapse text-xs sm:text-sm">
     <thead>
-      <tr class="border-b border-[#414B58] bg-[#282F38]/50 text-sm font-semibold text-[#ADB6C2] uppercase tracking-wider">
-        <th scope="col" class="py-3.5 px-4">Mes</th>
-        <th scope="col" class="py-3.5 px-4 text-right">Mínima</th>
-        <th scope="col" class="py-3.5 px-4 text-right">Máxima</th>
-        <th scope="col" class="py-3.5 px-4 text-right">Promedio</th>
-        <th scope="col" class="py-3.5 px-4 text-right">Muestras</th>
+      <tr class="border-b border-[#414B58] bg-[#282F38]/40 text-xs font-semibold text-[#ADB6C2] uppercase tracking-wider">
+        <th scope="col" class="py-2 px-3 whitespace-nowrap">Mes</th>
+        <th scope="col" class="py-2 px-3 text-right whitespace-nowrap">Mínima (24h)</th>
+        <th scope="col" class="py-2 px-3 text-right whitespace-nowrap">Máxima (24h)</th>
+        <th scope="col" class="py-2 px-3 text-right whitespace-nowrap">Promedio</th>
+        <th scope="col" class="py-2 px-3 text-right whitespace-nowrap">Muestras</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-[#414B58]/40 text-base">
-      {% for m in months[:8] %}
+    <tbody class="divide-y divide-[#414B58]/30">
+      {% for m in months[:4] %}
         <tr class="hover:bg-[#282F38]/40 transition-colors">
-          <td class="py-3 px-4 font-semibold text-[#F0F2F5] whitespace-nowrap">
+          <td class="py-1.5 px-3 font-semibold text-[#F0F2F5] whitespace-nowrap">
             {{ m.month }}
           </td>
-          <td class="py-3 px-4 text-right text-[#7DD9A5] font-mono whitespace-nowrap" title="{{ m.min_time }}">
+          <td class="py-1.5 px-3 text-right text-[#8AB4F8] font-mono whitespace-nowrap font-medium" title="{{ m.min_time }}">
             {{ m.min }} °C
           </td>
-          <td class="py-3 px-4 text-right {{ 'text-[#FF9292]' if m.max >= 75 else ('text-[#F2CC7D]' if m.max >= 60 else 'text-[#F0F2F5]') }} font-mono whitespace-nowrap" title="{{ m.max_time }}">
+          <td class="py-1.5 px-3 text-right text-[#FF9292] font-mono whitespace-nowrap font-medium" title="{{ m.max_time }}">
             {{ m.max }} °C
           </td>
-          <td class="py-3 px-4 text-right text-[#C4CBD4] font-mono whitespace-nowrap">
+          <td class="py-1.5 px-3 text-right text-[#C4CBD4] font-mono whitespace-nowrap">
             {{ m.avg }} °C
           </td>
-          <td class="py-3 px-4 text-right text-[#ADB6C2] text-sm whitespace-nowrap">
+          <td class="py-1.5 px-3 text-right text-[#ADB6C2] whitespace-nowrap">
             {{ "{:,}".format(m.count).replace(",", ".") }}
           </td>
         </tr>
       {% else %}
         <tr>
-          <td colspan="5" class="py-6 text-center text-[#ADB6C2]">
+          <td colspan="5" class="py-4 text-center text-[#ADB6C2] whitespace-nowrap">
             No hay registros mensuales disponibles.
           </td>
         </tr>
