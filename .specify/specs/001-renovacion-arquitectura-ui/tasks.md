@@ -9,4 +9,4 @@
 - [x] **[T007]** Configurar suite de pruebas completa con aislamiento de base de datos en `tests/` y validar en Python 3.15 y Python 3.12.
 - [x] **[T008]** Actualizar infraestructura: `Dockerfile` con `uv`, `compose.yml` a 1 solo contenedor con límites de recursos, `requirements.txt` y `.env.example`.
 - [x] **[T009]** Preservar datos persistentes (`data/database.db`), limpiar código obsoleto redundante y actualizar documentación `README.md`.
-- [ ] **[T010]** Crear tag de versión Git `v4.0.0` y verificar estado limpio del repositorio.
+- [x] **[T010]** Crear tag de versión Git `v4.0.0` y verificar estado limpio del repositorio.
