@@ -13,8 +13,8 @@ services:
       - TEMP_SENSOR_PATH=/sys/class/thermal/thermal_zone0/temp
       - CHECK_INTERVAL=600
     volumes:
-      # Persistencia de base de datos externa en el host
-      - ./data:/app/data
+      # Ruta canónica de persistencia en DietPi (o relativa mediante variable DATA_PATH)
+      - ${DATA_PATH:-/mnt/dietpi_userdata/apps/rpi_temp_monitor/data}:/app/data
       # Montura de solo lectura para los sensores térmicos de hardware en Raspberry Pi
       - /sys:/sys:ro
     deploy:
