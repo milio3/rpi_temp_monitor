@@ -6,7 +6,7 @@ services:
     container_name: rpi_temp_webapp
     restart: unless-stopped
     ports:
-      - "8085:8000"
+      - "5300:8000"
     environment:
       - TZ=Europe/Madrid
       - DATABASE_URL=sqlite:////app/data/database.db

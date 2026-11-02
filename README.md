@@ -65,14 +65,14 @@ rpi_temp_monitor/
 
 ## 🛠️ Despliegue en Producción (Raspberry Pi DietPi)
 
-El puerto asignado canónicamente en el host de producción es el **8085**:
+El puerto asignado canónicamente en el host de producción es el **5300**:
 
 | Parámetro | Valor Canónico |
 | :--- | :--- |
 | **Servidor / Arquitectura** | Raspberry Pi (DietPi OS, ARM64) |
 | **IP de Producción** | `192.168.1.33` |
-| **Puerto Host** | `8085` |
-| **URL de Acceso** | `http://192.168.1.33:8085` |
+| **Puerto Host** | `5300` |
+| **URL de Acceso** | `http://192.168.1.33:5300` |
 | **Contenedor** | `rpi_temp_webapp` |
 | **Ruta de Datos Persistentes** | `/mnt/dietpi_userdata/apps/rpi_temp_monitor/data` |
 

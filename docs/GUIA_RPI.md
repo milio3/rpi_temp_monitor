@@ -7,8 +7,8 @@ Esta guía detalla cómo desplegar la versión **v4.0.0** de RPi Temp Monitor en
 ## 1. Parámetros Operativos Canónicos
 
 - **Host / IP de Producción**: `192.168.1.33`
-- **Puerto Host Reservado**: `8085`
-- **URL de Acceso Web**: `http://192.168.1.33:8085`
+- **Puerto Host Reservado**: `5300`
+- **URL de Acceso Web**: `http://192.168.1.33:5300`
 - **Nombre del Contenedor**: `rpi_temp_webapp` (1 único contenedor unificado)
 - **Fichero de Orquestación**: `compose.yml`
 - **Ruta Canónica de Datos Persistentes en Host**: `/mnt/dietpi_userdata/apps/rpi_temp_monitor/data`
@@ -66,6 +66,6 @@ docker compose down 2>/dev/null || true
 docker compose up -d --build
 
 # 5. Comprobar salud y logs
-curl -s http://localhost:8085/health
+curl -s http://localhost:5300/health
 docker compose logs -f webapp
 ```
