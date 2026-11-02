@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 def get_cpu_temp() -> Optional[float]:
     """Obtiene la temperatura de la CPU desde el sensor del sistema o mediante simulación."""
     if settings.SIMULATE_TEMP:
-        # Genera una temperatura realista entre 41.0 y 55.0 °C con pequeñas variaciones
         return round(random.uniform(41.5, 53.5), 2)
 
     sensor_path = Path(settings.TEMP_SENSOR_PATH)
@@ -38,7 +37,7 @@ def record_current_temperature(session: Optional[Session] = None) -> Optional[Te
         logger.warning("No se pudo obtener la temperatura para registrar.")
         return None
 
-    reading = TemperatureReading(temperature=temp, timestamp=datetime.now())
+    reading = TemperatureReading(temperature=temp, timestamp=datetime.now(timezone.utc))
 
     if session is not None:
         session.add(reading)
@@ -68,7 +67,6 @@ async def run_periodic_monitor(stop_event: Optional[asyncio.Event] = None) -> No
             break
 
         try:
-            # Espera no bloqueante
             await asyncio.sleep(settings.CHECK_INTERVAL)
             if stop_event and stop_event.is_set():
                 break

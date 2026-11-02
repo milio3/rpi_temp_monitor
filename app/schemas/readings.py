@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 class TemperatureReadingBase(BaseModel):
     """Esquema base para lectura térmica."""
@@ -16,8 +16,7 @@ class TemperatureReadingRead(TemperatureReadingBase):
     """Esquema de salida para lecturas persistidas."""
     id: int = Field(..., description="Identificador único")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class MonthlyStatItem(BaseModel):
     """Estadísticas agrupadas por mes."""

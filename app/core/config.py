@@ -1,7 +1,7 @@
 import os
 import platform
 from pathlib import Path
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Configuración centralizada de la aplicación."""
@@ -35,6 +35,13 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = ["*"]
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+        extra="ignore",
+    )
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Asegurar directorio de datos
@@ -43,22 +50,15 @@ class Settings(BaseSettings):
         # Resolver DATABASE_URL por defecto si no está provista
         if not self.DATABASE_URL:
             db_path = self.DATA_DIR / "database.db"
-            # Si aún no existe en data/ pero existe en backend/database.db, usar el de backend temporalmente
             legacy_backend_db = self.BASE_DIR / "backend" / "database.db"
             if not db_path.exists() and legacy_backend_db.exists():
                 self.DATABASE_URL = f"sqlite:///{legacy_backend_db.as_posix()}"
             else:
                 self.DATABASE_URL = f"sqlite:///{db_path.as_posix()}"
 
-        # Configuración automática de simulación si se detecta Windows o ausencia de sensor
         is_windows = platform.system() == "Windows"
         sensor_exists = os.path.exists(self.TEMP_SENSOR_PATH)
         if is_windows or not sensor_exists:
             self.SIMULATE_TEMP = True
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
 
 settings = Settings()
