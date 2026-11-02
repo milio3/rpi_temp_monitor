@@ -21,9 +21,9 @@ def index_view(request: Request, session: Session = Depends(get_session)) -> HTM
     months = get_monthly_stats(session=session)
 
     return templates.TemplateResponse(
-        "pages/index.html",
-        {
-            "request": request,
+        request=request,
+        name="pages/index.html",
+        context={
             "version": settings.VERSION,
             "summary": summary,
             "months": months,
@@ -36,9 +36,9 @@ def fragment_current_temp(request: Request, session: Session = Depends(get_sessi
     """Retorna el fragmento HTML actualizado de temperatura actual para sondeo de HTMX."""
     summary = get_thermal_summary(session=session)
     return templates.TemplateResponse(
-        "fragments/current_temp.html",
-        {
-            "request": request,
+        request=request,
+        name="fragments/current_temp.html",
+        context={
             "summary": summary,
         },
     )
@@ -48,9 +48,9 @@ def fragment_stats_summary(request: Request, session: Session = Depends(get_sess
     """Retorna el fragmento HTML con las tarjetas KPI de 24 horas."""
     summary = get_thermal_summary(session=session)
     return templates.TemplateResponse(
-        "fragments/stats_summary.html",
-        {
-            "request": request,
+        request=request,
+        name="fragments/stats_summary.html",
+        context={
             "summary": summary,
         },
     )
@@ -60,9 +60,9 @@ def fragment_monthly_table(request: Request, session: Session = Depends(get_sess
     """Retorna el fragmento HTML con el listado mensual previo."""
     months = get_monthly_stats(session=session)
     return templates.TemplateResponse(
-        "fragments/monthly_table.html",
-        {
-            "request": request,
+        request=request,
+        name="fragments/monthly_table.html",
+        context={
             "months": months,
         },
     )
@@ -72,9 +72,9 @@ def fragment_modal_history(request: Request, session: Session = Depends(get_sess
     """Retorna el fragmento HTML con el histórico completo para el modal."""
     months = get_monthly_stats(session=session)
     return templates.TemplateResponse(
-        "fragments/modal_history.html",
-        {
-            "request": request,
+        request=request,
+        name="fragments/modal_history.html",
+        context={
             "months": months,
         },
     )
