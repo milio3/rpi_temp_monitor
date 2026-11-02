@@ -1,7 +1,7 @@
 # Tareas de Implementación: Renovación de Arquitectura e Interfaz (v4.0.0)
 
 - [x] **[T001]** Crear estructura canónica base, configuración Pydantic Settings con `VERSION = "4.0.0"` y conexión SQLite WAL (`app/core/config.py`, `app/core/database.py`).
-- [ ] **[T002]** Definir modelos SQLModel compatibles con `temperaturereading` y esquemas Pydantic (`app/models/reading.py`, `app/schemas/readings.py`).
+- [x] **[T002]** Definir modelos SQLModel compatibles con `temperaturereading` y esquemas Pydantic (`app/models/reading.py`, `app/schemas/readings.py`).
 - [ ] **[T003]** Implementar servicios de monitorización periódica de CPU y cálculo de métricas agregadas (`app/services/monitor.py`, `app/services/stats.py`).
 - [ ] **[T004]** Implementar endpoints de salud `GET /health` y `GET /ready` en `app/api/health.py` y endpoints REST v1 en `app/api/v1/endpoints.py`.
 - [ ] **[T005]** Construir vistas Jinja2, macros SVG y fragmentos HTMX ergonómicos para modo oscuro WCAG 2.2 AA (`app/web/...`).
