@@ -84,6 +84,13 @@ def get_thermal_summary(session: Session) -> ThermalSummary:
         check_interval_seconds=settings.CHECK_INTERVAL,
     )
 
+def _format_datetime_short(ts_val) -> str:
+    """Formatea una marca temporal al formato año-mes-día hora:minuto (YYYY-MM-DD HH:MM)."""
+    if not ts_val:
+        return ""
+    ts_str = str(ts_val).replace("T", " ").split(".")[0].strip()
+    return ts_str[:16]
+
 def get_monthly_stats(session: Session) -> List[MonthlyStatItem]:
     """Genera el desglose mensual de temperaturas mínimas, máximas y promedios con fechas."""
     query = text("""
@@ -113,8 +120,8 @@ def get_monthly_stats(session: Session) -> List[MonthlyStatItem]:
                 min=round(float(min_temp), 2),
                 max=round(float(max_temp), 2),
                 avg=round(float(avg_temp), 2) if avg_temp is not None else round(float(min_temp), 2),
-                min_time=str(min_time) if min_time else "",
-                max_time=str(max_time) if max_time else "",
+                min_time=_format_datetime_short(min_time),
+                max_time=_format_datetime_short(max_time),
                 count=int(total),
             )
         )

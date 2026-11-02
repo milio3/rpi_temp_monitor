@@ -1,52 +1,52 @@
 {% from "components/icon.html" import icon %}
 <div class="space-y-4">
-  <div class="flex items-center justify-between pb-3 border-b border-[#414B58]">
+  <div class="flex items-center justify-between gap-4 pb-3 border-b border-[#414B58]">
     <div>
-      <h3 class="text-xl font-bold text-[#F0F2F5]">Histórico Mensual Completo</h3>
-      <p class="text-sm text-[#ADB6C2]">Registro cronológico de temperaturas mínimas, máximas y promedios</p>
+      <h3 class="text-xl font-bold text-[#F0F2F5] whitespace-nowrap">Histórico Mensual Completo</h3>
+      <p class="text-sm text-[#ADB6C2] whitespace-nowrap">Registro cronológico consolidado de mínimas, máximas y promedios térmicos</p>
     </div>
     <a href="/api/v1/readings/export/csv"
-       class="inline-flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium text-[#171A1F] bg-[#8AB4F8] hover:bg-[#A6C7FF] rounded-lg transition-colors focus:ring-2 focus:ring-[#A6C7FF] focus:outline-none">
+       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#171A1F] bg-[#8AB4F8] hover:bg-[#A6C7FF] rounded-lg transition-colors focus:ring-2 focus:ring-[#A6C7FF] focus:outline-none whitespace-nowrap flex-shrink-0">
       {{ icon("download", class="w-4 h-4") }}
       <span>Descargar CSV</span>
     </a>
   </div>
 
-  <div class="overflow-x-auto max-h-[60vh] overflow-y-auto">
-    <table class="w-full text-left border-collapse text-base">
+  <div class="overflow-x-auto max-h-[68vh] overflow-y-auto rounded-lg border border-[#414B58]/60">
+    <table class="w-full text-left border-collapse text-sm">
       <thead class="sticky top-0 bg-[#282F38] shadow-sm z-10">
         <tr class="border-b border-[#414B58] text-xs font-bold text-[#ADB6C2] uppercase tracking-wider">
-          <th scope="col" class="py-3 px-4">Mes</th>
-          <th scope="col" class="py-3 px-4 text-right">Mínima (°C)</th>
-          <th scope="col" class="py-3 px-4 text-left">Hora Mínima</th>
-          <th scope="col" class="py-3 px-4 text-right">Máxima (°C)</th>
-          <th scope="col" class="py-3 px-4 text-left">Hora Máxima</th>
-          <th scope="col" class="py-3 px-4 text-right">Promedio</th>
-          <th scope="col" class="py-3 px-4 text-right">Lecturas</th>
+          <th scope="col" class="py-3 px-4 whitespace-nowrap">Mes</th>
+          <th scope="col" class="py-3 px-4 text-right whitespace-nowrap min-w-[120px]">Mínima (°C)</th>
+          <th scope="col" class="py-3 px-4 text-left whitespace-nowrap min-w-[160px]">Fecha / Hora Mínima</th>
+          <th scope="col" class="py-3 px-4 text-right whitespace-nowrap min-w-[120px]">Máxima (°C)</th>
+          <th scope="col" class="py-3 px-4 text-left whitespace-nowrap min-w-[160px]">Fecha / Hora Máxima</th>
+          <th scope="col" class="py-3 px-4 text-right whitespace-nowrap min-w-[120px]">Promedio</th>
+          <th scope="col" class="py-3 px-4 text-right whitespace-nowrap min-w-[120px]">Lecturas</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[#414B58]/30">
         {% for m in months %}
           <tr class="hover:bg-[#282F38]/50 transition-colors">
-            <td class="py-3.5 px-4 font-semibold text-[#F0F2F5] whitespace-nowrap">
+            <td class="py-3 px-4 font-semibold text-[#F0F2F5] whitespace-nowrap">
               {{ m.month }}
             </td>
-            <td class="py-3.5 px-4 text-right text-[#7DD9A5] font-mono whitespace-nowrap font-bold">
+            <td class="py-3 px-4 text-right text-[#8AB4F8] font-mono whitespace-nowrap font-bold">
               {{ m.min }} °C
             </td>
-            <td class="py-3.5 px-4 text-left text-xs text-[#ADB6C2] whitespace-nowrap">
-              {{ m.min_time }}
+            <td class="py-3 px-4 text-left font-mono text-xs text-[#C4CBD4] whitespace-nowrap">
+              {{ m.min_time if m.min_time else "--" }}
             </td>
-            <td class="py-3.5 px-4 text-right {{ 'text-[#FF9292]' if m.max >= 75 else ('text-[#F2CC7D]' if m.max >= 60 else 'text-[#F0F2F5]') }} font-mono whitespace-nowrap font-bold">
+            <td class="py-3 px-4 text-right text-[#FF9292] font-mono whitespace-nowrap font-bold">
               {{ m.max }} °C
             </td>
-            <td class="py-3.5 px-4 text-left text-xs text-[#ADB6C2] whitespace-nowrap">
-              {{ m.max_time }}
+            <td class="py-3 px-4 text-left font-mono text-xs text-[#C4CBD4] whitespace-nowrap">
+              {{ m.max_time if m.max_time else "--" }}
             </td>
-            <td class="py-3.5 px-4 text-right text-[#C4CBD4] font-mono whitespace-nowrap">
+            <td class="py-3 px-4 text-right text-[#F0F2F5] font-mono whitespace-nowrap">
               {{ m.avg }} °C
             </td>
-            <td class="py-3.5 px-4 text-right text-[#ADB6C2] text-sm whitespace-nowrap">
+            <td class="py-3 px-4 text-right text-[#ADB6C2] whitespace-nowrap">
               {{ "{:,}".format(m.count).replace(",", ".") }}
             </td>
           </tr>
