@@ -1,72 +1,62 @@
-# Guía de Despliegue en Raspberry Pi (Portainer)
+# Guía de Despliegue en Raspberry Pi (DietPi ARM64 / Portainer)
 
-Esta guía detalla cómo desplegar el Monitor de Temperatura utilizando **Portainer**.
+Esta guía detalla cómo desplegar la versión **v4.0.0** de RPi Temp Monitor en el servidor de producción.
 
-## Datos de Despliegue
+---
 
--   **IP Raspberry Pi**: `192.168.1.33`
--   **Puerto Web**: `8085`
--   **URL de Acceso**: `http://192.168.1.33:8085`
+## 1. Parámetros de Operación
 
-## 1. Configuración en Portainer
+- **Host / IP de Producción**: `192.168.1.33`
+- **Puerto Host Reservado**: `8085`
+- **URL de Acceso Web**: `http://192.168.1.33:8085`
+- **Nombre del Contenedor**: `rpi_temp_webapp`
+- **Fichero de Orquestación**: `compose.yml`
+- **Directorio de Datos Persistentes en Host**: `/mnt/dietpi_userdata/apps/rpi_temp_monitor/data`
 
-1.  Accede a tu instancia de Portainer.
-2.  Ve al apartado **Stacks** y pulsa en **Add stack**.
-3.  Selecciona la opción **Repository** (para que se actualice desde GitHub/Git).
-4.  Rellena los campos:
-    -   **Name**: `rpi_temp_monitor`
-    -   **Repository URL**: *(La URL de tu repositorio GitHub)*
-    -   **Repository reference**: `refs/heads/main` (o la rama donde tengas este código, ej: `feature/backend-refactor`)
-    -   **Compose path**: `docker-compose.yml`
-5.  Variables de entorno (Opcional, ya definidas en el fichero, pero puedes sobrescribirlas):
-    -   `TZ`: `Europe/Madrid`
-6.  Pulsa **Deploy the stack**.
+---
 
-## 2. Verificación
+## 2. Despliegue mediante Portainer
 
-Una vez el stack esté en estado "Running":
+1. Accede a tu consola de Portainer en la Raspberry Pi.
+2. Ve a la sección **Stacks** y pulsa **Add stack**.
+3. Selecciona el método **Repository**:
+   - **Name**: `rpi_temp_monitor`
+   - **Repository URL**: *(URL del repositorio en GitHub)*
+   - **Repository reference**: `refs/tags/v4.0.0` (o rama `main`)
+   - **Compose path**: `compose.yml`
+4. Pulsa **Deploy the stack**.
 
-1.  Abre un navegador web.
-2.  Navega a: `http://192.168.1.33:8085`
-3.  Deberías ver la interfaz del monitor.
+---
 
-## 3. Migración de Datos (Log antiguo)
-
-Si tienes un fichero `temp.log` antiguo y quieres importar sus datos:
-
-1.  Localiza dónde tienes el fichero `temp.log` en tu Raspberry Pi (por ejemplo `/home/pi/temp.log`).
-2.  Conéctate por SSH a la RPi.
-3.  Copia el fichero dentro del contenedor del monitor:
-    ```bash
-    # Identifica el ID del contenedor
-    docker ps | grep monitor
-    
-    # Copia el fichero (sustituye <CONTAINER_ID>)
-    docker cp /home/pi/temp.log <CONTAINER_ID>:/app/backend/temp_legacy.log
-    ```
-4.  Ejecuta el script de migración incluído:
-    ```bash
-    docker exec -it <CONTAINER_ID> python scripts/migrate_legacy.py --log-file temp_legacy.log
-    ```
-
-## Notas Técnicas
-
--   **Sin deploy.sh**: El script `deploy.sh` antiguo se ha movido a `scripts/deploy.sh` pero **no es necesario** si usas Portainer.
-
-## 4. Solución de Errores Comunes
-
-### Error: "attempt to write a readonly database"
-
-Si ves este error en los logs, es porque el contenedor ahora corre como usuario no privilegiado (`1000:1000`) por seguridad, pero la carpeta de datos pertenece a `root`.
-
-**Solución**:
-Ejecuta este comando en la terminal de tu Raspberry Pi para dar permisos al usuario por defecto:
+## 3. Despliegue mediante CLI en Raspberry Pi
 
 ```bash
-# Si usas una ruta volumen personalizada (ej: /home/pi/rpi_data)
-sudo chown -R 1000:1000 /home/pi/rpi_data
+# 1. Conectar por SSH
+ssh dev@192.168.1.33
 
-# Si usas la ruta por defecto de Portainer/Docker (busca tu volumen)
-# Opción rápida: dar permisos a 'otros' (menos seguro pero funcional en entornos aislados)
-sudo chmod 777 -R path/to/your/volume
+# 2. Situarse en el directorio de la aplicación
+cd /opt/apps/rpi_temp_monitor
+
+# 3. Descargar la versión deseada
+git fetch --tags
+git checkout v4.0.0
+
+# 4. Asegurar permisos en el directorio de persistencia
+sudo mkdir -p /mnt/dietpi_userdata/apps/rpi_temp_monitor/data
+sudo chown -R 1000:1000 /mnt/dietpi_userdata/apps/rpi_temp_monitor/data
+
+# 5. Levantar el servicio
+docker compose up -d --build
+
+# 6. Comprobar salud y logs
+curl -f http://localhost:8085/health
+docker compose logs -f webapp
 ```
+
+---
+
+## 4. Notas Técnicas de la Versión 4.0.0
+
+- **1 Único Contenedor**: Se ha unificado el servicio web y la captura de datos térmica en un solo proceso con el ciclo de vida `lifespan` de FastAPI, reduciendo el consumo de RAM a menos de 512 MB.
+- **Acceso a Hardware Térmico**: El contenedor mapea `/sys:/sys:ro` para leer directamente la temperatura de la CPU desde `/sys/class/thermal/thermal_zone0/temp` en la Raspberry Pi.
+- **Persistencia Segura**: La base de datos SQLite se ejecuta con `journal_mode=WAL` y `synchronous=NORMAL` para máxima integridad estructural.
