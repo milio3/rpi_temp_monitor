@@ -1,0 +1,64 @@
+{% from "components/icon.html" import icon %}
+<div id="current-temp-container"
+     hx-get="/web/fragments/current-temp"
+     hx-trigger="every 30s"
+     hx-swap="outerHTML"
+     class="p-6 md:p-8 bg-[#20252C] border border-[#414B58] rounded-xl shadow-md flex flex-col justify-between relative overflow-hidden">
+
+  <!-- Cabecera de la tarjeta con estado térmico -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2.5">
+      <span class="inline-block w-3 h-3 rounded-full {{ 'bg-[#7DD9A5]' if summary.current_status == 'normal' else ('bg-[#F2CC7D]' if summary.current_status == 'warning' else 'bg-[#FF9292]') }}"></span>
+      <h2 class="text-lg font-semibold text-[#F0F2F5]">Temperatura CPU Actual</h2>
+    </div>
+
+    <!-- Badge Semántico de Estado -->
+    {% if summary.current_status == "normal" %}
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#282F38] text-[#7DD9A5] border border-[#7DD9A5]/30">
+        Óptimo (&lt; 60 °C)
+      </span>
+    {% elif summary.current_status == "warning" %}
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#282F38] text-[#F2CC7D] border border-[#F2CC7D]/30">
+        Aviso (&gt; 60 °C)
+      </span>
+    {% else %}
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#282F38] text-[#FF9292] border border-[#FF9292]/30">
+        Crítico (&gt; 75 °C)
+      </span>
+    {% endif %}
+  </div>
+
+  <!-- Valor Principal de Temperatura -->
+  <div class="my-4">
+    <div class="flex items-baseline gap-2">
+      <span class="text-6xl md:text-7xl font-extrabold tracking-tight text-[#F0F2F5]">{{ summary.current_temp }}</span>
+      <span class="text-3xl md:text-4xl font-semibold text-[#8AB4F8]">°C</span>
+    </div>
+  </div>
+
+  <!-- Barra de Margen Térmico (Headroom hasta Throttling 80°C) -->
+  <div class="mt-4 pt-4 border-t border-[#414B58]/60 space-y-3">
+    <div class="flex justify-between items-center text-sm">
+      <span class="text-[#C4CBD4] font-medium">Margen hasta Throttling (80 °C):</span>
+      <span class="font-bold text-[#F0F2F5]">{{ summary.thermal_headroom }} °C</span>
+    </div>
+
+    <!-- Barra de progreso visual -->
+    {% set pct = [0, [100, (summary.current_temp / 80.0 * 100) | round] | min] | max %}
+    <div class="w-full bg-[#171A1F] rounded-full h-3 border border-[#414B58] overflow-hidden">
+      <div class="h-full rounded-full transition-all duration-500 {{ 'bg-[#7DD9A5]' if pct < 75 else ('bg-[#F2CC7D]' if pct < 90 else 'bg-[#FF9292]') }}"
+           style="width: {{ pct }}%;"></div>
+    </div>
+
+    <div class="flex justify-between items-center text-xs text-[#ADB6C2] pt-1">
+      <span class="flex items-center gap-1">
+        {{ icon("clock", class="w-3.5 h-3.5") }}
+        Última lectura: {{ summary.last_timestamp.strftime("%H:%M:%S") if summary.last_timestamp else "--:--" }}
+      </span>
+      <span class="flex items-center gap-1">
+        {{ icon("database", class="w-3.5 h-3.5") }}
+        {{ "{:,}".format(summary.total_readings).replace(",", ".") }} lecturas
+      </span>
+    </div>
+  </div>
+</div>

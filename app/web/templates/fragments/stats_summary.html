@@ -1,0 +1,38 @@
+{% from "components/kpi_card.html" import kpi_card %}
+<div id="stats-summary-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+  {{ kpi_card(
+      title="Mínima (24h)",
+      value=summary.min_24h,
+      unit="°C",
+      subtitle="Punto más frío del día",
+      icon_name="thermometer",
+      status="normal"
+  ) }}
+
+  {{ kpi_card(
+      title="Máxima (24h)",
+      value=summary.max_24h,
+      unit="°C",
+      subtitle="Pico de temperatura registrado",
+      icon_name="alert-triangle" if summary.max_24h >= 60 else "thermometer",
+      status="warning" if summary.max_24h >= 60 else "normal"
+  ) }}
+
+  {{ kpi_card(
+      title="Promedio (24h)",
+      value=summary.avg_24h,
+      unit="°C",
+      subtitle="Media ponderada 24 horas",
+      icon_name="chart",
+      status="normal"
+  ) }}
+
+  {{ kpi_card(
+      title="Margen Térmico",
+      value=summary.thermal_headroom,
+      unit="°C",
+      subtitle="Holgura segura de disipación",
+      icon_name="shield-check",
+      status="normal"
+  ) }}
+</div>

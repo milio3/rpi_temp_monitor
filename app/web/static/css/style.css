@@ -1,0 +1,110 @@
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Superficies (Grafito y Carbón) */
+  --color-bg: #171A1F;
+  --color-surface: #20252C;
+  --color-surface-raised: #282F38;
+  --color-surface-hover: #303844;
+
+  /* Texto (Alto contraste y legibilidad) */
+  --color-text-primary: #F0F2F5;
+  --color-text-secondary: #C4CBD4;
+  --color-text-muted: #ADB6C2;
+
+  /* Bordes sutiles */
+  --color-border: #414B58;
+  --color-border-strong: #596575;
+
+  /* Acento funcional */
+  --color-accent: #8AB4F8;
+  --color-accent-hover: #A6C7FF;
+  --color-accent-text: #171A1F;
+
+  /* Estados semánticos */
+  --color-success: #7DD9A5;
+  --color-warning: #F2CC7D;
+  --color-danger: #FF9292;
+  --color-info: #8AB4F8;
+
+  /* Foco e interacción */
+  --color-focus: #A6C7FF;
+
+  /* Tipografía */
+  --font-family-base: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-body: 1.125rem;          /* 18px */
+  --font-size-secondary: 1rem;         /* 16px */
+  --font-size-label: 1rem;             /* 16px */
+  --font-size-card-title: 1.125rem;    /* 18px */
+  --font-size-section-title: 1.625rem; /* 26px */
+  --font-size-page-title: 2.125rem;    /* 34px */
+
+  --line-height-body: 1.55;
+  --line-height-heading: 1.3;
+
+  /* Altura de Controles ergonómicos */
+  --control-height: 2.75rem;           /* 44px */
+  --control-height-comfortable: 3rem;  /* 48px */
+
+  /* Radios de curvatura */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco accesible obligatorio WCAG 2.2 AA */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Scrollbar ergonómico oscuro */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+/* Transiciones de swap de HTMX suaves */
+.htmx-swapping {
+  opacity: 0.2;
+  transition: opacity 200ms ease-out;
+}
+
+.htmx-settling {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+/* Altura de filas de tabla accesible (>= 44px) */
+table tr {
+  min-height: 48px;
+}

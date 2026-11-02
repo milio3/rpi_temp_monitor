@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}RPi Temp Monitor v{{ version }}{% endblock %}</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+
+  <!-- Tailwind CSS CDN para utilidades -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#171A1F',
+              surface: '#20252C',
+              surfaceRaised: '#282F38',
+              surfaceHover: '#303844',
+              border: '#414B58',
+              borderStrong: '#596575',
+              accent: '#8AB4F8',
+              accentHover: '#A6C7FF',
+              success: '#7DD9A5',
+              warning: '#F2CC7D',
+              danger: '#FF9292',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- HTMX para interacción reactiva declarativa -->
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+  <!-- Alpine.js para interactividad local en cliente -->
+  <script defer src="https://unpkg.com/alpinejs@3.14.0/dist/cdn.min.js"></script>
+
+  <!-- Chart.js para visualización de métricas térmicas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <!-- Estilos canónicos ergonómicos del proyecto -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col bg-[#171A1F] text-[#F0F2F5] selection:bg-[#8AB4F8] selection:text-[#171A1F]"
+      x-data="{ showModal: false }"
+      @keydown.escape.window="showModal = false">
+
+  <!-- Barra de Navegación Canónica -->
+  {% include "components/navbar.html" %}
+
+  <!-- Contenido Principal -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Modal Histórico Completo con Alpine.js -->
+  <div x-cloak
+       x-show="showModal"
+       class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+       aria-modal="true"
+       role="dialog">
+    <div class="fixed inset-0" @click="showModal = false"></div>
+    <div class="relative bg-[#20252C] border border-[#596575] rounded-2xl max-w-4xl w-full p-6 shadow-2xl z-10 max-h-[90vh] flex flex-col"
+         @click.stop>
+      <!-- Cabecera de Modal -->
+      <div class="flex items-center justify-between pb-3 border-b border-[#414B58]">
+        <h2 class="text-xl font-bold text-[#F0F2F5]">Histórico Completo</h2>
+        <button @click="showModal = false"
+                class="p-2 rounded-lg text-[#ADB6C2] hover:text-[#F0F2F5] hover:bg-[#282F38] transition-colors focus:ring-2 focus:ring-[#8AB4F8]"
+                aria-label="Cerrar modal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <!-- Cuerpo del Modal cargado dinámicamente con HTMX -->
+      <div id="modal-history-content" class="mt-4 flex-grow overflow-y-auto">
+        <div class="py-12 text-center text-[#ADB6C2]">
+          Cargando histórico detallado...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pie de Página -->
+  <footer class="border-t border-[#414B58] bg-[#20252C] py-6 px-6 text-center text-sm text-[#ADB6C2]">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>RPi Temp Monitor — DietPi ARM64 Monitoreo de Hardware</p>
+      <p class="font-mono text-xs text-[#8AB4F8]">v{{ version }} | Zona Horaria: Europe/Madrid</p>
+    </div>
+  </footer>
+
+  <!-- Script del Dashboard -->
+  <script src="/static/js/dashboard.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

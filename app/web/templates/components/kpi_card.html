@@ -1,0 +1,24 @@
+{% from "components/icon.html" import icon %}
+{% macro kpi_card(title, value, unit="", subtitle="", icon_name="thermometer", status="normal") %}
+  <div class="p-6 bg-[#20252C] border border-[#414B58] rounded-xl shadow-sm flex flex-col justify-between hover:border-[#596575] transition-colors">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-base font-medium text-[#C4CBD4]">{{ title }}</span>
+      <div class="p-2 rounded-lg bg-[#282F38] text-[#8AB4F8] border border-[#414B58]">
+        {{ icon(icon_name, class="w-5 h-5") }}
+      </div>
+    </div>
+    <div>
+      <div class="flex items-baseline gap-1.5">
+        <span class="text-3xl md:text-4xl font-bold tracking-tight text-[#F0F2F5]">{{ value }}</span>
+        {% if unit %}
+          <span class="text-xl font-medium text-[#ADB6C2]">{{ unit }}</span>
+        {% endif %}
+      </div>
+      {% if subtitle %}
+        <p class="mt-2 text-sm text-[#ADB6C2] flex items-center gap-1.5">
+          {{ subtitle }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

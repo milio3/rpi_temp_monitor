@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+{% from "components/icon.html" import icon %}
+
+{% block content %}
+<!-- Sección Superior: Lectura Actual y KPIs de 24h -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+  <!-- Tarjeta Principal de Temperatura Actual (con auto-refresco HTMX cada 30s) -->
+  <div class="lg:col-span-1">
+    {% include "fragments/current_temp.html" %}
+  </div>
+
+  <!-- Resumen de Métricas de las Últimas 24 Horas -->
+  <div class="lg:col-span-2 flex flex-col justify-between">
+    {% include "fragments/stats_summary.html" %}
+
+    <!-- Fila de Metadatos de Hardware y Configuración -->
+    <div class="mt-4 p-4 bg-[#20252C] border border-[#414B58] rounded-xl flex flex-wrap items-center justify-between gap-4 text-sm text-[#C4CBD4]">
+      <div class="flex items-center gap-2">
+        <span class="text-[#8AB4F8]">{{ icon("cpu", class="w-4 h-4") }}</span>
+        <span>Ruta Sensor: <code class="text-xs bg-[#282F38] px-2 py-0.5 rounded text-[#F0F2F5]">{{ sensor_path }}</code></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[#8AB4F8]">{{ icon("clock", class="w-4 h-4") }}</span>
+        <span>Intervalo: <strong class="text-[#F0F2F5]">{{ summary.check_interval_seconds // 60 }} min</strong> ({{ summary.check_interval_seconds }}s)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[#8AB4F8]">{{ icon("shield-check", class="w-4 h-4") }}</span>
+        <span>Límite Throttling: <strong class="text-[#F0F2F5]">80.0 °C</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sección Intermedia: Gráficas de Rendimiento Térmico -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Gráfica de 24 Horas -->
+  <div class="p-6 bg-[#20252C] border border-[#414B58] rounded-xl shadow-sm flex flex-col">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2.5">
+        <span class="p-1.5 rounded-lg bg-[#282F38] text-[#8AB4F8] border border-[#414B58]">
+          {{ icon("chart", class="w-5 h-5") }}
+        </span>
+        <h2 class="text-lg font-semibold text-[#F0F2F5]">Actividad Térmica (Últimas 24h)</h2>
+      </div>
+      <span class="text-xs font-mono text-[#ADB6C2]">Muestreo continuo</span>
+    </div>
+    <div class="h-72 w-full relative">
+      <canvas id="dailyChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Gráfica de 30 Días -->
+  <div class="p-6 bg-[#20252C] border border-[#414B58] rounded-xl shadow-sm flex flex-col">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2.5">
+        <span class="p-1.5 rounded-lg bg-[#282F38] text-[#7DD9A5] border border-[#414B58]">
+          {{ icon("calendar", class="w-5 h-5") }}
+        </span>
+        <h2 class="text-lg font-semibold text-[#F0F2F5]">Tendencia Histórica (30 Días)</h2>
+      </div>
+      <span class="text-xs font-mono text-[#ADB6C2]">Evolución térmica</span>
+    </div>
+    <div class="h-72 w-full relative">
+      <canvas id="historyChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Sección Inferior: Tabla de Histórico Mensual y Acceso Rápido -->
+<div class="p-6 bg-[#20252C] border border-[#414B58] rounded-xl shadow-sm space-y-4">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[#414B58]">
+    <div>
+      <h2 class="text-xl font-bold text-[#F0F2F5] flex items-center gap-2.5">
+        {{ icon("calendar", class="w-6 h-6 text-[#8AB4F8]") }}
+        <span>Histórico Mensual Agregado</span>
+      </h2>
+      <p class="text-sm text-[#ADB6C2]">Mínimas, máximas y promedios consolidados por mes</p>
+    </div>
+
+    <!-- Botón para Abrir Modal con Historial Detallado -->
+    <button @click="showModal = true"
+            hx-get="/web/fragments/modal-history"
+            hx-target="#modal-history-content"
+            hx-swap="innerHTML"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-[#F0F2F5] bg-[#282F38] hover:bg-[#303844] border border-[#414B58] rounded-lg transition-colors focus:ring-2 focus:ring-[#8AB4F8] focus:outline-none cursor-pointer">
+      <span>Ver Historial Completo</span>
+      {{ icon("external", class="w-4 h-4 text-[#8AB4F8]") }}
+    </button>
+  </div>
+
+  <!-- Vista Previa de la Tabla Mensual -->
+  {% include "fragments/monthly_table.html" %}
+</div>
+{% endblock %}
